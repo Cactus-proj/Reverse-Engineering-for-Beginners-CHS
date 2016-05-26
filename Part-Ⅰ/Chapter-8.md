@@ -17,13 +17,13 @@ int main()
 };
 ```
 
-## 7.1 X86
+## 8.1 X86
 
-### 7.1.1 MSVC
+### 8.1.1 MSVC
 
 如下为相应的反汇编代码（MSVC 2010 Express）
 
-Listing 7.2 MSVC 2010 Express
+Listing 8.2 MSVC 2010 Express
 
 ```
 _TEXT   SEGMENT
@@ -63,19 +63,19 @@ _main ENDP
 
 _a$[ebp]的值被存储在寄存器eax中，IMUL指令执行后，eax的值为eax与_b$[ebp]的乘积，然后eax与_c$[ebp]的值相加并将和放入eax寄存器中,之后返回eax的值。返回值作为printf()的参数。
 
-### 7.1.2 MSVC+OllyDbg
+### 8.1.2 MSVC+OllyDbg
 
 我们在OllyDbg中观察，跟踪到函数f()使用第一个参数的位置，可以看到寄存器EBP指向栈底，图中使用红色箭头标识。栈帧中第一个被保存的是EBP的值，第二个是返回地址（RA），第三个是参数1，接下来是参数2，以此类推。因此，当我们访问第一个参数时EBP应该加8（2个32-bit字节宽度）。
 
 ![](pic/C8-1.png)
 
-Figure 7.1: OllyDbg: 函数f()内部
+Figure 8.1: OllyDbg: 函数f()内部
 
-### 7.1.3 GCC
+### 8.1.3 GCC
 
 使用GCC4.4.1编译后在IDA中查看
 
-Listing 7.3: GCC 4.4.1
+Listing 8.3: GCC 4.4.1
 
 ```
             public f
@@ -124,15 +124,15 @@ main    endp
 
 执行两个函数后栈指针ESP并没有显示恢复，因为倒数第二个指令LEAVE（B.6.2）会自动恢复栈指针。
 
-## 7.2 X64
+## 8.2 X64
 
 x86-64架构下有点不同，函数参数（4或6）使用寄存器传递，被调用函数通过访问寄存器来访问传递进来的参数。
 
-### 7.2.1 MSVC
+### 8.2.1 MSVC
 
 MSVC优化后：
 
-Listing 7.4: MSVC 2012 /Ox x64
+Listing 8.4: MSVC 2012 /Ox x64
 
 ```
 $SG2997     DB      ’%d’, 0aH, 00H
@@ -165,7 +165,7 @@ f           ENDP
 
 我们来看看MSVC没有优化的情况：
 
-Listing 7.5: MSVC 2012 x64
+Listing 8.5: MSVC 2012 x64
 
 ```
 f           proc near
@@ -209,11 +209,11 @@ main        endp
 
 调用者负责在栈中分配“shadow space”。
 
-### 7.2.2 GCC
+### 8.2.2 GCC
 
 GCC优化后的代码：
 
-Listing 7.6: GCC 4.4.6 -O3 x64
+Listing 8.6: GCC 4.4.6 -O3 x64
 
 ```
 f:
@@ -242,7 +242,7 @@ main:
 
 GCC无优化代码：
 
-Listing 7.7: GCC 4.4.6 x64
+Listing 8.7: GCC 4.4.6 x64
 
 ```
 f:
@@ -281,7 +281,7 @@ main:
 
 System V *NIX [21]没有“shadow space”，但被调用者可能会保存参数，这也是造成寄存器短缺的原因。
 
-### 7.2.3 GCC: uint64_t instead int
+### 8.2.3 GCC: uint64_t instead int
 
 我们例子使用的是32位int，寄存器也为32位寄存器（前缀为E-）。
 
@@ -303,7 +303,7 @@ int main()
 };
 ```
 
-Listing 7.8: GCC 4.4.6 -O3 x64
+Listing 8.8: GCC 4.4.6 -O3 x64
 
 ```
 f       proc near
@@ -331,9 +331,9 @@ main    endp
 
 代码非常相似，只是使用了64位寄存器（前缀为R）。
 
-## 7.3 ARM
+## 8.3 ARM
 
-### 7.3.1 未优化的Keil + ARM mode
+### 8.3.1 未优化的Keil + ARM mode
 
 ```
 .text:000000A4 00 30 A0 E1              MOV     R3, R0
@@ -369,7 +369,7 @@ MLA (Multiply Accumulate)指令将R3寄存器和R1寄存器的值相乘，然后
 
 BX指令返回到LR寄存器存储的地址，处理器根据状态模式从Thumb状态转换到ARM状态，或者反之。函数f()可以被ARM代码或者Thumb代码调用，如果是Thumb代码调用BX将返回到调用函数并切换到Thumb模式，或者反之。
 
-### 7.3.2 Optimizing Keil + ARM mode
+### 8.3.2 Optimizing Keil + ARM mode
 
 ```
 .text:00000098            f
@@ -379,7 +379,7 @@ BX指令返回到LR寄存器存储的地址，处理器根据状态模式从Thum
 
 这里f()编译时使用完全优化模式(-O3),MOV指令被优化，现在MLA使用所有输入寄存器并将结果置入R0寄存器。
 
-### 7.3.3 Optimizing Keil + thumb mode
+### 8.3.3 Optimizing Keil + thumb mode
 
 ```
 .text:0000005E 48 43                  MULS R0, R1
@@ -388,3 +388,10 @@ BX指令返回到LR寄存器存储的地址，处理器根据状态模式从Thum
 ```
 
 Thumb模式下没有MLA指令，编译器做了两次间接处理，MULS指令使R0寄存器的值与R1寄存器的值相乘并将结果存入R0。ADDS指令将R0与R2的值相加并将结果存入R0。
+
+### 8.3.4 ARM64
+#### Optimizing GCC (Linaro) 4.9
+
+#### Non-optimizing GCC (Linaro) 4.9
+
+## 8.4 MIPS 

@@ -1,8 +1,10 @@
-# 第七章 
+# 第七章
 # scanf()
+
 
 现在我们来使用scanf()。
 
+## 7.1 简单的例子
 ```
 #include <stdio.h>
 int main() 
@@ -19,7 +21,7 @@ int main()
 
 好吧，我承认现在使用scanf()是不明智的，但是我想说明如何把指针传递给int变量。
 
-## 6.1 关于指针
+### 7.1.1 关于指针
 
 这是计算机科学中最基础的概念之一。通常，大数组、结构或对象经常被传递给其它函数，而传递它们的地址要更加简单。更重要的是：如果调用函数要修改数组或结构中的数据，并且作为整体返回，那么最简单的办法就是把数组或结构的地址传递给函数，让函数进行修改。
 
@@ -33,9 +35,9 @@ int main()
 
 在C/C++中，指针类型只是用于在编译阶段进行类型检查。本质上，在已编译的代码中并不包含指针类型的信息。
 
-## 6.2 x86
+### 7.1.2 x86
 
-### 6.2.1 MSVC
+#### MSVC
 
 MVSC 2010编译后得到下面代码
 
@@ -125,7 +127,7 @@ EBP的值减去4，结果放在EAX寄存器中。接着EAX寄存器的值被压�
 
 然后，ECX的值放入栈中，接着最后一次调用printf()。
 
-### 6.2.2 MSVC+OllyDbg
+### 7.1.3 MSVC+OllyDbg
 
 让我们在OllyDbg中使用这个例子。首先载入程序，按F8直到进入我们的可执行文件而不是ntdll.dll。往下滚动屏幕找到main()。点击第一条指令（PUSH EBP），按F2，再按F9，触发main()开始处的断点。
 
@@ -135,7 +137,7 @@ EBP的值减去4，结果放在EAX寄存器中。接着EAX寄存器的值被压�
 
 ![](pic/C7-1.png)
 
-图6.1 命令行输出
+图7.1 命令行输出
 
 scanf()在这里执行。图6.3。scanf()在EAX中返回1，这意味着成功读入了一个值。现在我们关心的那个栈元素中的值是0x7B(123)。
 
@@ -143,17 +145,17 @@ scanf()在这里执行。图6.3。scanf()在EAX中返回1，这意味着成功�
 
 ![](pic/C7-2.png)
 
-图6.2 OllyDbg：计算局部变量的地址
+图7.2 OllyDbg：计算局部变量的地址
 
 ![](pic/C7-3.png)
 
-图6.3：OllyDbg：scanf()执行
+图7.3：OllyDbg：scanf()执行
 
 ![](pic/C7-4.png)
 
-图6.4：OllyDbg：准备把值传递给printf()
+图7.4：OllyDbg：准备把值传递给printf()
 
-### 6.2.3 GCC
+####  GCC
 
 让我们在Linux GCC 4.4.1下编译这段代码
 
@@ -161,11 +163,14 @@ GCC把第一个调用的printf()替换成了puts()，原因在2.3.3节中讲过�
 
 和之前一样，参数都是用MOV指令放入栈中。
 
-## 6.3 x64
+#### By the way
+
+
+### 7.1.4 x64
 
 和原来一样，只是传递参数时不使用栈而使用寄存器。
 
-### 6.3.1 MSVC
+#### MSVC
 
 ```
 _DATA   SEGMENT
@@ -195,7 +200,7 @@ main    ENDP
 _TEXT   ENDS
 ```
 
-### 6.3.2 GCC
+#### GCC
 
 ```
 .LC0:
@@ -224,9 +229,9 @@ main:
         ret
 ```
 
-## 6.4 ARM
+### 7.1.5 ARM
 
-### 6.4.1 keil优化+thumb mode
+#### keil优化+thumb mode
 
 ```
 .text:00000042      scanf_main
@@ -252,7 +257,12 @@ main:
 
 用ARM-mode和Xcode LLVM编译的代码区别不大，这里略去。
 
-## 6.5 Global Variables
+#### ARM64
+
+### 7.1.6 MIPS
+
+
+### 7.2 全局变量
 
 如果之前的例子中的x变量不再是本地变量而是全局变量呢？那么就有机会接触任何指针，不仅仅是函数体，全局变量被认为anti-pattern(通常被认为是一个不好的习惯)，但是为了试验，我们可以这样做。
 
@@ -270,7 +280,7 @@ int main()
 };
 ```
 
-### 6.5.1 MSVC: x86
+### 7.2.1 MSVC: x86
 
 ```
 _DATA       SEGMENT
@@ -343,7 +353,7 @@ _x      DD      0aH
 
 被_x替换了？其它变量也并未要求初始化，这也就是说在载入exe至内存后，在这里有一块针对所有变量的空间，并且还有一些随机的垃圾数据。但在在exe中这些没有初始化的变量并不影响什么，比如它适合大数组。
 
-### 6.5.2 MSVC: x86 + OllyDbg
+### 7.2.2 MSVC: x86 + OllyDbg
 
 到这里事情就变得简单了(见表6.5)，变量都在data部分，顺便说一句，在PUSH指令后，压入x的地址，被执行后，地址将会在栈中显示，那么右击元组数据，点击"Fllow in dump"，然后变量就会在左侧内存窗口显示.
 
@@ -353,17 +363,17 @@ _x      DD      0aH
 
 不一会，这里的32-bit值就会载入到EAX中，然后被传递给printf().
 
-X变量地址是0xDC3390.在OllyDbg中我们看进程内存映射(Alt-M)，然后发现这个地在PE文件.data结构处。见表6.6
+X变量地址是0xDC3390.在OllyDbg中我们看进程内存映射(Alt-M)，然后发现这个地在PE文件.data结构处。见表7.6
 
 ![](pic/C7-5.png)
 
-表6.5 OllyDbg: scanf()执行后
+表7.5 OllyDbg: scanf()执行后
 
 ![](pic/C7-6.png)
 
-表6.6: OllyDbg 进程内存映射
+表7.6: OllyDbg 进程内存映射
 
-### 6.5.3 GCC: x86
+### 7.2.3 GCC: x86
 
 这和linux中几乎是一样的，除了segment的名称和属性:未初始化变量被放置在_bss部分。
 
@@ -381,7 +391,7 @@ X变量地址是0xDC3390.在OllyDbg中我们看进程内存映射(Alt-M)，然�
 ; Segment permissions: Read/Write
 ```
 
-### 6.5.4 MSVC: x64
+### 7.2.4 MSVC: x64
 
 ```
 _DATA       SEGMENT
@@ -413,7 +423,7 @@ _TEXT ENDS
 
 几乎和x86中的代码是一样的，发现x变量的地址传递给scanf()用的是LEA指令，尽管第二处传递给printf()变量时用的是MOV指令，"DWORD PTR"——是汇编语言中的一部分(和机器码没有联系)。这就表示变量数据类型是32-bit，于是MOV指令就被编码了。
 
-### 6.5.5 ARM:Optimizing Keil + thumb mode
+### 7.2.5 ARM:Optimizing Keil + thumb mode
 
 ```
 .text:00000000 ; Segment type: Pure code
@@ -464,7 +474,16 @@ _TEXT ENDS
 
 另外，如果变量以const声明，Keil编译环境下则会将变量放在.constdata部分，大概从那以后，链接时就可以把这部分和代码块放在ROM里了。
 
-## 6.6 scanf()结果检查
+### 7.2.6 ARM64
+### 7.2.7 MIPS
+
+#### 未初始化的全局变量
+
+#### 已初始化的全局变量
+
+
+
+## 7.3 scanf()结果检查
 
 正如我之前所见的，现在使用scanf()有点过时了，但是如过我们不得不这样做时，我们需要检查scanf()执行完毕时是否发生了错误。
 
@@ -507,7 +526,7 @@ ouch
 What you entered? Huh?
 ```
 
-### 6.6.1 MSVC: x86
+### 7.3.1 MSVC: x86
 
 我们可以得到这样的汇编代码(msvc2010):
 
@@ -547,7 +566,7 @@ JNE根据CMP的结果判断跳至哪，JNE表示(jump if Not Equal)
 
 但是事实上，这却被认为是诡异的。但是CMP指令事实上,但是CMP指令实际上是SUB(subtract),所有算术指令都会设置processor flags,不仅仅只有CMP，当我们比较1和1时，1结果就变成了0，ZF flag就会被设定(表示最后一次的比较结果为0)，除了两个数相等以外，再没有其他情况了。JNE 检查ZF flag，如果没有设定就会跳转。JNE实际上就是JNZ(Jump if Not Zero)指令。JNE和JNZ的机器码都是一样的。所以CMP指令可以被SUB指令代替，几乎一切的都没什么变化。但是SUB会改变第一个数，CMP是"SUB without saving result".
 
-### 6.6.2 MSVC: x86:IDA
+### 7.3.2 MSVC: x86:IDA
 
 现在是时候打开IDA然后尝试做些什么了，顺便说一句。对于初学者来说使用在MSVC中使用/MD是个非常好的主意。这样所有独立的函数不会从可执行文件中link，而是从MSVCR*.dll。因此这样可以简单明了的发现函数在哪里被调用。
 
@@ -640,13 +659,13 @@ JNE根据CMP的结果判断跳至哪，JNE表示(jump if Not Equal)
 
 ![](pic/C7-7.png)
 
-图6.7: IDA 图形模式
+图7.7: IDA 图形模式
 
 ![](pic/C7-8.png)
 
-图6.8: Graph mode in IDA with 3 nodes folded
+图7.8: Graph mode in IDA with 3 nodes folded
 
-### 6.6.3 MSVC: x86 + OllyDbg
+### 7.3.3 MSVC: x86 + OllyDbg
 
 让我们继续在OllyDbg中看这个范例程序，使它认为scanf()怎么运行都不会出错。
 
@@ -664,19 +683,19 @@ JNE根据CMP的结果判断跳至哪，JNE表示(jump if Not Equal)
 
 ![](pic/C7-9.png)
 
-图6.9
+图7.9
 
 实际上，5035128是栈上一个数据(0x4CD478)的十进制表示!
 
 ![](pic/C7-10.png)
 
-图6.10
+图7.10
 
 ![](pic/C7-11.png)
 
-图6.11
+图7.11
 
-### 6.6.4 MSVC: x86 + Hlew
+### 7.3.4 MSVC: x86 + Hlew
 
 这也是一个关于可执行文件patch的简单例子，我们之前尝试patch程序，所以程序总是打印数字，不管我们输入什么。
 
@@ -698,11 +717,11 @@ JNE根据CMP的结果判断跳至哪，JNE表示(jump if Not Equal)
 
 图6.13:Hiew 用两个NOP替换JNZ
 
-### 6.6.5 GCC: x86
+~~### 7.3.5 GCC: x86~~
 
-生成的代码和gcc 4.4.1是一样的，除了我们之前已经考虑过的
+~~生成的代码和gcc 4.4.1是一样的，除了我们之前已经考虑过的~~
 
-### 6.6.6 MSVC: x64
+### 7.3.5 MSVC: x64
 
 因为我们这里处理的是无整型变量。在x86-64中还是32bit,我们可以看出32bit的寄存器(前缀为E)在这种情况下是怎样使用的,然而64bit的寄存也有被使用(前缀R)
 
@@ -742,8 +761,8 @@ main        ENDP
 _TEXT       ENDS
 END
 ```
-
-### 6.6.7 ARM:Optimizing Keil + thumb mode
+### 7.3.6 ARM
+#### ARM:Optimizing Keil + thumb mode
 
 ```
 var_8       = -8
@@ -779,3 +798,11 @@ CMP和x86指令中的相似，它会用一个参数减去另外一个参数然�
 BEQ是跳向另一处地址，如果数相等就会跳，如果最后一次比较结果为0，或者Z flag是1。和x86中的JZ是一样的。
 
 其他的都很简单，执行流程分为两个方向，当R0被写入0后，两个方向则会合并，作为函数的返回值，然后函数结束。
+
+#### ARM64
+
+### 7.3.7 MIPS
+
+###7.3.8 练习
+
+## 7.4 练习

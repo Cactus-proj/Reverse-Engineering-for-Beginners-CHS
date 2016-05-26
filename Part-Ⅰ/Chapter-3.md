@@ -11,9 +11,9 @@ int main() {
 };
 ```
 
-# 2.1 x86
+# 3.1 x86
 
-## 2.1.1 MSVC-x86
+## 3.1.1 MSVC-x86
 
 在MSVC 2010中编译一下：
 
@@ -101,7 +101,7 @@ XOR事实上就是异或，但是编译器经常用它来代替`MOV EAX, 0`原�
 
 最后的指令RET 返回给调用者，他是C/C++代码吧控制返还给操作系统。
 
-## 2.1.2 GCC-x86
+## 3.1.2 GCC
 
 现在我们尝试同样的C/C++代码在linux中的GCC 4.4.1编译
 
@@ -155,7 +155,7 @@ main            endp
 
 这是必须的，因为我们在函数的开头修改了这些寄存器的值（ESP和EBP）（执行MOV EBP，ESP/AND ESP...）。
 
-## 2.1.3 GCC:AT&T 语法
+## 3.1.3 GCC:AT&T 语法
 
 我们来看一看在AT&T当中的汇编语法，这个语法在UNIX当中更普遍。
 
@@ -235,9 +235,9 @@ b      byte(8 bits)
 
 外加返回值这里用的MOV来设定为0，而不是用XOR。MOV仅仅是加载（load）了变量到寄存器。指令的名称并不直观。在其他的构架上，这条指令会被称作例如”load”这样的。
 
-# 2.2 x86-64
+# 3.2 x86-64
 
-## 2.2.1 MSVC-x86-64
+## 3.2.1 MSVC-x86-64
 
 让我们来试试64-bit的MSVC：
 
@@ -261,7 +261,7 @@ main ENDP
 
 在main()函数会返回一个int类型的值，在64位的程序里为了兼容和移植性，还是用32位的，所以可以看到EAX（寄存器的低32位部分）在函数最后替代RAX被清空成0。
 
-## 2.2.2 GCC-x86-64
+## 3.2.2 GCC-x86-64
 
 这次试试GCC在64位的Linux里：
 
@@ -303,11 +303,16 @@ Listing 2.8：GCC 4.4.6 x64
 
 参考【21】 MichaelMatz/JanHubicka/AndreasJaeger/MarkMitchell. Systemvapplicationbinaryinterface.amdarchitecture processor supplement, . Also available as http://x86-64.org/documentation/abi.pdf.
 
-# 2.3 ARM
+
+# 3.3 GCC——额外的一点
+
+
+
+# 3.4 ARM
 
 根据作者自身对ARM处理器的经验，选择了2款在嵌入式开发流行的编译器，Keil Release 6/2013和苹果的Xcode 4.6.3 IDE(其中使用了LLVM-GCC4.2编译器)，这些可以为ARM兼容处理器和系统芯片(System on Chip)(SOC))来进行编码。比如ipod/iphone/ipad,windows8 rt,并且包括raspberry pi。
 
-## 2.3.1 未进行代码优化的Keil编译：ARM模式
+## 3.3.1 未进行代码优化的Keil 6/2013 编译：ARM模式
 
 让我们在Keil里编译我们的例子
 
@@ -364,7 +369,7 @@ Listing 2.9: Non-optimizing Keil + ARM mode + IDA
 
 汇编代码里的DCB关键字用来定义ASCII字串数组，就像x86汇编里的DB关键字。
 
-## 2.3.2未进行代码优化的Keil编译： thumb模式
+## 3.4.2未进行代码优化的Keil 6/2013 编译： thumb模式
 
 让我们用下面的指令讲例程用Keil的thumb模式来编译一下。
 
@@ -386,7 +391,7 @@ Listing 2.9: Non-optimizing Keil + ARM mode + IDA
 
 至于其他指令:PUSH和POP，它们跟上面讲到的STMFD跟LDMFD很类似，但这里不需要指定SP寄存器，ADR指令也跟上面的工作方式相同。MOVS指令将函数的返回值0写到了R0里，最后函数返回。
 
-### 2.3.3开启代码优化的Xcode（LLVM）编译： ARM模式
+### 3.4.3开启代码优化的Xcode（LLVM）编译： ARM模式
 
 Xcode 4.6.3不开启代码优化的情况下，会产生非常多冗余的代码，所以我们学习一个尽量小的版本。
 
@@ -429,7 +434,7 @@ puts()函数效率更快是因为它只是做了字串的标准输出(stdout)并
 
 下面，我们可以看到非常熟悉的`"MOV R0, #0"`指令，用来将R0寄存器设为0。
 
-## 2.3.4 开启代码优化的Xcode(LLVM)编译thumb-2模式
+## 3.4.4 开启代码优化的Xcode(LLVM)编译thumb-2模式
 
 在默认情况下，Xcode4.6.3会生成如下的thumb-2代码
 
@@ -479,3 +484,5 @@ __symbolstub1:00003FEC 44 F0 9F E5  LDR PC, =__imp__puts
 外加，我们前面也指出过，我们没办法只用一条指令并且不做内存操作的情况下就将一个32bit的值保存到寄存器里，ARM并不是唯一的模式的情况下，程序里去跳入动态库中的某个函数里，最好的办法就是这样做一些类似与上面这样单一指令的函数（称做thunk function），然后从thumb模式里也能去调用。
 
 在上面的例子（ARM编译的那个例子）中BL指令也是跳转到了同一个thunk function里。尽管没有进行模式的转变（所以指令里不存在那个”X”）。
+
+#### 关于实行转换函数

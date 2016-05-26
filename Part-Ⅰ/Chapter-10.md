@@ -2,7 +2,7 @@
 # 指针
 指针通常被用作函数返回值(recall scanf() case (6)).例如，当函数返回两个值时。
 
-## 9.1 Global variables example
+## 10.1 Global variables example
 
 ```
 #include <stdio.h>
@@ -24,7 +24,7 @@ void main()
 
 编译后
 
-Listing 9.1: Optimizing MSVC 2010 (/Ox /Ob0)
+Listing 10.1: Optimizing MSVC 2010 (/Ox /Ob0)
 
 ```
 COMM        _product:DWORD
@@ -73,33 +73,33 @@ _main   ENDP
 
 让我们跟踪到f1()结尾，可以看到两个全局变量存放了计算结果。
 
-现在两个全局变量的值被加载到寄存器传递给printf(): fig. 9.4.
+现在两个全局变量的值被加载到寄存器传递给printf(): fig. 10.4.
 
 ![](pic/C10-1.png)
 
-Figure 9.1: OllyDbg: 全局变量地址被传递进f1()
+Figure 10.1: OllyDbg: 全局变量地址被传递进f1()
 
 ![](pic/C10-2.png)
 
-Figure 9.2: OllyDbg: f1()开始
+Figure 10.2: OllyDbg: f1()开始
 
 ![](pic/C10-3.png)
 
-Figure 9.3: OllyDbg: f1()完成
+Figure 10.3: OllyDbg: f1()完成
 
 ![](pic/C10-4.png)
 
-Figure 9.4: OllyDbg: 全局变量被传递进printf()
+Figure 10.4: OllyDbg: 全局变量被传递进printf()
 
 ![](pic/C10-5.png)
 
-Figure 9.5: OllyDbg: memory map
+Figure 10.5: OllyDbg: memory map
 
-## 9.2 Local variables example
+## 10.2 Local variables example
 
 让我们修改一下例子：
 
-Listing 9.2: 局部变量
+Listing 10.2: 局部变量
 
 ```
 void main()
@@ -114,7 +114,7 @@ void main()
 
 f1()函数代码没有改变。仅仅main()代码作了修改。
 
-Listing 9.3: Optimizing MSVC 2010 (/Ox /Ob0)
+Listing 10.3: Optimizing MSVC 2010 (/Ox /Ob0)
 
 ```
 _product$ = -8              ; size = 4
@@ -143,24 +143,24 @@ _main   PROC
         ret     0
 ```
 
-我们在OD中查看，局部变量地址在堆栈中是0x35FCF4和0x35FCF8。我们可以看到是如何圧栈的fig. 9.6.
+我们在OD中查看，局部变量地址在堆栈中是0x35FCF4和0x35FCF8。我们可以看到是如何圧栈的fig. 10.6.
 
-f1()开始的时候，随机栈地址为0x35FCF4和0x35FCF8 fig. 9.7.
+f1()开始的时候，随机栈地址为0x35FCF4和0x35FCF8 fig. 10.7.
 
 f1()完成时结果0xDB18和0x243存放在地址0x35FCF4和0x35FCF8。
 
 ![](pic/C10-6.png)
 
-Figure 9.6: OllyDbg: 局部变量地址被圧栈
+Figure 10.6: OllyDbg: 局部变量地址被圧栈
 
 ![](pic/C10-7.png)
 
-Figure 9.7: OllyDbg: f1()starting
+Figure 10.7: OllyDbg: f1()starting
 
 ![](pic/C10-8.png)
 
-Figure 9.8: OllyDbg: f1()finished
+Figure 10.8: OllyDbg: f1()finished
 
-## 9.3 小结
+## 10.3 小结
 
 f1()可以返回结果到内存的任何地方，这是指针的本质和特性。顺便提一下，C++引用的工作方式和这个类似。详情阅读相关内容（33）。

@@ -12,9 +12,11 @@ int main()
 };
 ```
 
-## 5.1 x86: 3个参数
+## 6.1 x86
 
-### 5.1.1 MSVC
+### 6.1.1 x86: 3个参数
+
+### MSVC
 
 在我们用MSVC 2010 Express编译后可以看到：
 
@@ -56,7 +58,7 @@ call ...
 add esp, 24
 ```
 
-### 5.1.2 MSVC 与 ollyDbg
+### MSVC 与 ollyDbg
 
 现在我们来在OllyDbg中加载这个范例。我们可以尝试在MSVC 2012 加 /MD 参数编译这个示例，也就是链接`MSVCR*.dll`，那么我们就可以在debugger中清楚的看到调用的函数。
 
@@ -72,7 +74,7 @@ add esp, 24
 
 ![](pic/C6-1.png)
 
-图 5.1
+图 6.1
 
 然后我们可以看到有三列，栈的地址，元组数据，以及一些OllyDbg的注释，OllyDbg可以识别像printf()这样的字符串，以及后面的三个值。
 
@@ -84,7 +86,7 @@ add esp, 24
 
 ![](pic/C6-2.png)
 
-图5.2 执行printf()函数
+图6.2 执行printf()函数
 
 让我们看看寄存器和栈是怎样变化的 见图5.5
 
@@ -102,21 +104,21 @@ ESP改变了，但是值还是在栈中！当然 没有必要用0或者别的数
 
 ![](pic/C6-3.png)
 
-图5.3 OllyDbg:main()初始处
+图6.3 OllyDbg:main()初始处
 
 ![](pic/C6-4.png)
 
-图5.4 OllyDbg:printf()执行时
+图6.4 OllyDbg:printf()执行时
 
 ![](pic/C6-5.png)
 
-图5.5 Ollydbg:printf()执行后
+图6.5 Ollydbg:printf()执行后
 
 ![](pic/C6-6.png)
 
-图5.6 OllyDbg ADD ESP, 10执行完后
+图6.6 OllyDbg ADD ESP, 10执行完后
 
-5.1.3 GCC
+### GCC
 
 现在我们将同样的程序在linux下用GCC4.4.1编译后放入IDA看一下:
 
@@ -146,7 +148,7 @@ main            endp
 
 MSVC与GCC编译后代码的不同点只是参数入栈的方法不同，这里GCC不用PUSH/POP而是直接对栈操作。
 
-### 5.1.4 GCC与GDB
+### GCC与GDB
 
 接着我们尝试在linux中用GDB运行下这个示例程序。
 
@@ -170,7 +172,7 @@ For bug reporting instructions, please see:
 Reading symbols from /home/dennis/polygon/1...done.
 ```
 
-表5.1 在printf()处设置断点
+表6.1 在printf()处设置断点
 
 ```
 (gdb) b printf
@@ -310,7 +312,7 @@ eip 0x804844f 0x804844f <main+50>
 ...
 ```
 
-## 5.2 x64: 8个参数
+## 6.1.2 x64: 8个参数
 
 为了看其他参数如何通过栈传递的，我们再次修改代码将参数个数增加到9个(printf()格式化字符串和8个int 变量)
 
@@ -323,7 +325,7 @@ int main() {
 };
 ```
 
-### 5.2.1 MSVC
+### MSVC
 
 正如我们之前所见，在win64下开始的4个参数传递至RCX，RDX，R8，R9寄存器，
 
@@ -356,9 +358,9 @@ _TEXT ENDS
 END
 ````
 
-表5.2：msvc 2010 x64
+表6.2：msvc 2010 x64
 
-### 5.2.2 GCC
+### GCC
 
 在\*NIX系统，对于x86-64这也是同样的原理，除了前6个参数传递给了RDI，RSI，RDX，RCX，R8，R9寄存器。GCC将生成的代码字符指针写入了EDI而不是RDI(如果有的话)——我们在2.2.2节看到过这部分
 
@@ -391,9 +393,9 @@ main:
     ret
 ```
 
-表5.3:GCC 4.4.6 –o 3 x64
+表6.3:GCC 4.4.6 –o 3 x64
 
-5.2.3 GCC + GDB
+### GCC + GDB
 
 让我们在GDB中尝试这个例子。
 
@@ -532,11 +534,13 @@ rip     0x40057b 0x40057b <main+78>
 ...
 ```
 
-## 5.3 ARM:3个参数
+# 6.2 ARM
+## 6.3 ARM:3个参数
 
 习惯上，ARM传递参数的规则(参数调用)如下:前4个参数传递给了R0-R3寄存器，其余的参数则在栈中。这和fastcall或者win64传递参数很相似
 
-### 5.3.1 Non-optimizing Keil + ARM mode(非优化keil编译模式 + ARM环境)
+###32-bit ARM
+### Non-optimizing Keil + ARM mode(非优化keil编译模式 + ARM环境)
 
 ```
 .text:00000014            printf_main1
@@ -552,7 +556,7 @@ rip     0x40057b 0x40057b <main+78>
 
 所以 前四个参数按照它们的顺序传递给了R0-R3， printf()中的格式化字符串指针在R0中，然后1在R1，2在R2，3在R3. 到目前为止没有什么不寻常的。
 
-### 5.3.2 Optimizing Keil + ARM mode(优化的keil编译模式 + ARM环境)
+### Optimizing Keil + ARM mode(优化的keil编译模式 + ARM环境)
 
 ```
 .text:00000014     EXPORT printf_main1
@@ -569,7 +573,7 @@ rip     0x40057b 0x40057b <main+78>
 
 这是在针对ARM optimized (-O3)版本下的，我们可以B作为最后一个指令而不是熟悉的BL。另外一个不同之处在optimized与之前的(compiled without optimization)对比发现函数prologue 和 epilogue(储存R0和LR值的寄存器)，B指令仅仅跳向另一处地址，没有任何关于LR寄存器的操作，也就是说它和x86中的jmp相似，为什么会这样？因为代码就是这样，事实上，这和前面相似，主要有两点原因 1)不管是栈还是SP(栈指针)，都有被修改。2)printf()的调用是最后的指令，所以之后便没有了。完成之后，printf()函数就返回到LR储存的地址处。但是指针地址从函数调用的地方转移到了LR中！接着就会从printf()到那里。结果，我们不需要保存LR，因为我们没有必要修改LR。因为除了printf()函数外没有其他函数了。另外，除了这个调用外，我们不需要再做别的。这就是为什么这样编译是可行的。
 
-### 5.3.3 Optimizing Keil + thumb mode
+### Optimizing Keil + thumb mode
 
 ```
 .text:0000000C     printf_main1
@@ -583,11 +587,18 @@ rip     0x40057b 0x40057b <main+78>
 .text:0000001A 10 BD           POP {R4,PC}
 ```
 
-表5.8：Optimizing Keil + thumb mode
+表6.8：Optimizing Keil + thumb mode
 
 和non-optimized for ARM mode代码没什么明显的区别
 
-## 5.4 ARM: 8 arguments
+### Optimizing Keil 6/2013 (ARM mode) + 让我们移除 return
+
+### ARM 64
+
+### Non-optimizing GCC (Linaro) 4.9
+
+
+## 6.2.2 ARM: 8 arguments
 
 我们再用之前9个参数的那个例子
 
@@ -599,7 +610,7 @@ void printf_main2()
 };
 ```
 
-### 5.4.1 Optimizing Keil: ARM mode
+### Optimizing Keil: ARM mode
 
 ```
 .text:00000028      printf_main2
@@ -652,7 +663,7 @@ e=%d; f=%d; g=%"...
 
 “ADD SP, SP, #0x14”指令将SP指针返回到之前的指针处，因此清除了栈，当然，栈中之前写入的数据还在那，但是当后来的函数被调用时那里则会被重写。 “LDR PC, [SP+4+var_4],#4"指令将LR中储存的值载入到PC指针，因此函数结束。
 
-### 5.4.2 Optimizing Keil: thumb mode
+### Optimizing Keil: thumb mode
 
 ```
 .text:0000001C      printf_main2
@@ -719,7 +730,7 @@ __text:00002958 80 80 BD E8     LDMFD   SP!, {R7,PC}
 
 另外一个地方我们可以轻松的发现指令是随机分布的，例如，R0寄存器中的值在三个地方初始，在0x2918，0x2920,0x2928。而这一个指令就可以搞定。然而，optimizing compiler有它自己的原因，对于如何更好的放置指令，通常，处理器尝试同时执行并行的指令，例如像” MOVT R0, #0”和” ADD R0, PC,R0”就不能同时执行了，因为它们同时都在修改R0寄存器，另一方面”MOVT R0, #0”和”MOV R2, #4”指令却可以同时执行，因为执行效果并没有任何冲突。 大概，编译器就是这样尝试编译的，可能。
 
-### 5.4.4 Optimizing Xcode (LLVM): thumb-2 mode
+### Optimizing Xcode (LLVM): thumb-2 mode
 
 ```
 __text:00002BA0     _printf_main2
@@ -753,6 +764,25 @@ __text:00002BD8 80 BD           POP     {R7,PC}
 
 几乎和前面的例子相同，除了thumb-instructions在这里被替代使用了
 
-## 5.5 by the way
+### ARM 64
+
+### 无优化的 GCC (Linaro) 4.9
+
+## 6.3 MIPS
+### 6.3.1 3个参数
+### 带优化的 GCC 4.4.5
+
+### 无优化的 GCC 4.4.5
+
+### 6.3.2 8个参数
+
+### 带优化的 GCC 4.4.5
+
+### 无优化的 GCC 4.4.5
+
+## 6.4 结论
+
+
+## 6.5 By the way
 
 值得一提的是，这些x86,x64,fastcall和ARM传递参数的不同表现了CPU并不在意函数参数是怎样传递的，同样也假想编译器可能用特殊的结构传送参数而一点也不是通过栈。
