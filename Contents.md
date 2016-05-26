@@ -1,6 +1,6 @@
 ## Part I 代码模式
-1. [CPU简介](Part-Ⅰ/Chapter-1.md) 
-- [最简单的函数](Part-Ⅰ/Chapter-2.md)  
+1. [CPU简介](Part-Ⅰ/Chapter-1.md)
+- [最简单的函数](Part-Ⅰ/Chapter-2.md)
 - [Hello,world!](Part-Ⅰ/Chapter-3.md)
 - [函数的开始和结束](Part-Ⅰ/Chapter-4.md)
 - [栈](Part-Ⅰ/Chapter-5.md)
@@ -36,68 +36,87 @@
 - [CPU](Part-Ⅱ/Chapter-33.md)
 - [哈希函数](Part-Ⅱ/Chapter-34.md)
 
-
-以下尚未整理、更新  只有基本的框架
--
 ## Part III 更高级些的例子
-- [35](Part-Ⅲ/Chapter-35.md)
-- [36](Part-Ⅲ/Chapter-36.md)
-- [— — —](Part-Ⅲ/Chapter-36.md)
-- [53](Part-Ⅲ/Chapter-53.md)
-
+- [温度转换](Part-Ⅲ/Chapter-35.md)
+- [斐波那契数列](Part-Ⅲ/Chapter-36.md)
+- [CRC32的计算实例](Part-Ⅲ/Chapter-37.md)
+- [网址的计算实例](Part-Ⅲ/Chapter-38.md)
+- [循环:几个迭代器](Part-Ⅲ/Chapter-39.md)
+- [Duff’s device](Part-Ⅲ/Chapter-40.md)
+- [除以9](Part-Ⅲ/Chapter-41.md)
+- [将字符串转化为数字(atoi())](Part-Ⅲ/Chapter-42.md)
+- [内联函数](Part-Ⅲ/Chapter-43.md)
+- [C99 的约束](Part-Ⅲ/Chapter-44.md)
+- [无分支的abs()函数](Part-Ⅲ/Chapter-45.md)
+- [参数可变的函数](Part-Ⅲ/Chapter-46.md)
+- [字符串截取](Part-Ⅲ/Chapter-47.md)
+- [toupper()函数](Part-Ⅲ/Chapter-48.md)
+- [不正确的反汇编代码](Part-Ⅲ/Chapter-49.md)
+- [代码混淆](Part-Ⅲ/Chapter-50.md)
+- [C++](Part-Ⅲ/Chapter-51.md)
+- [负的数组引索](Part-Ⅲ/Chapter-52.md)
+- [Windoes 16-bit](Part-Ⅲ/Chapter-53.md)
 
 ## Part IV JAVA
 - [Java](Part-Ⅳ/Chapter-54.md)
 
 ## Part V 在代码里面寻找重要又有趣的东西
-- [MicrosoftVisualC++](Part-Ⅴ/Chapter-55.md)
-- [communication_with_the_outer_world_(win32)](Part-Ⅴ/Chapter-56.md)
-- [text_strings](Part-Ⅴ/Chapter-57.md)
-- [call_to_assert](Part-Ⅴ/Chapter-58.md)
-- [constans](Part-Ⅴ/Chapter-59.md)
-- [finding_the_right_instructions](Part-Ⅴ/Chapter-60.md)
-- [xor_instructions](Chapter-61/Chapter-61.md)
-- [using_magic_numbers_while_tracing](Part-Ⅴ/Chapter-62.md)
-- [general_idea](Part-Ⅴ/Chapter-63.md)
+- [可执行文件的识别](Part-Ⅴ/Chapter-55.md)
+- [和外部世界的交流(win32)](Part-Ⅴ/Chapter-56.md)
+- [字符串](Part-Ⅴ/Chapter-57.md)
+- [调用断言](Part-Ⅴ/Chapter-58.md)
+- [常量](Part-Ⅴ/Chapter-59.md)
+- [找到真正的指令](Part-Ⅴ/Chapter-60.md)
+- [可疑代码的模式](Part-Ⅴ/Chapter-61.md)
+- [在追踪时使用Magic numbers](Part-Ⅴ/Chapter-62.md)
+- [其他东西](Part-Ⅴ/Chapter-63.md)
 
 ## Part VI 操作系统的特性
-- [ArgumentsPassingMethods](Part-Ⅵ/Chapter-64.md)
-- [ThreadLocalStorage](Part-Ⅵ/Chapter-65.md)
-- [SystemCalls](Part-Ⅵ/Chapter-66.md)
+- [参数传递方法(调用规则)](Part-Ⅵ/Chapter-64.md)
+- [本地线程储存区](Part-Ⅵ/Chapter-65.md)
+- [系统调用](Part-Ⅵ/Chapter-66.md)
 - [Linux](Part-Ⅵ/Chapter-67.md)
-- [Windows-NT](Chapter-68/Chapter-68.md)
+- [Windows-NT](Part-Ⅵ/Chapter-68.md)
 
 ## Part VII 工具
-- [Disassembler](Part-Ⅶ/Chapter-69.md)
-- [Debugger](Part-Ⅶ/Chapter-70.md)
-- [SystemCallTracing](Part-Ⅶ/Chapter-71.md)
-- [Decompilers](Part-Ⅶ/Chapter-72.md)
-- [OtherTools](Part-Ⅶ/Chapter-73.md)
+- [反汇编器](Part-Ⅶ/Chapter-69.md)
+- [调试器](Part-Ⅶ/Chapter-70.md)
+- [系统调用的追踪](Part-Ⅶ/Chapter-71.md)
+- [反编译器](Part-Ⅶ/Chapter-72.md)
+- [其他工具](Part-Ⅶ/Chapter-73.md)
 
 ## Part VIII 真实的逆向工程例子
-- [74](Part-Ⅷ/Chapter-74.md)
-- [— — —](Part-Ⅷ/Chapter-82.md)
+- [任务管理器中的恶作剧(Win Vista)](Part-Ⅷ/Chapter-74.md)
+- [颜色共线游戏的](Part-Ⅷ/Chapter-75.md)
+- [扫雷艇(Win XP)](Part-Ⅷ/Chapter-76.md)
+- [手动反编译 + Z3 SMT solver](Part-Ⅷ/Chapter-77.md)
+- [加密狗](Part-Ⅷ/Chapter-78.md)
+- ["QR9":魔方启给了业余的加密算法灵感](Part-Ⅷ/Chapter-79.md)
+- [SAP](Part-Ⅷ/Chapter-80.md)
+- [Oracle RDBMS](Part-Ⅷ/Chapter-81.md)
+- [手写汇编代码](Part-Ⅷ/Chapter-82.md)
 - [83](Part-Ⅷ/Chapter-83.md)
 
 ## Part IX 逆向文件格式的例子
-
-- [Primitive XOR-encryption](Part-Ⅸ/Chapter-84.md)
-- [Millenium game save file](Part-Ⅸ/Chapter-85.md)
-- [Oracle RDBMS SYM-files](Chapter-86/Chapter-86.md)
+- [基本的异或加密](Part-Ⅸ/Chapter-84.md)
+- [Millenium 的存档文件](Part-Ⅸ/Chapter-85.md)
+- [Oracle RDBMS SYM-files](Part-Ⅸ/Chapter-86.md)
 - [Oracle RDBMS MSB-files](Part-Ⅸ/Chapter-87.md)
 
 ## Part X 杂项
-
 - [npad](Part-Ⅹ/Chapter-88.md)
-- [— — —](Part-Ⅹ/Chapter-89.md)
-- [npad](Part-Ⅹ/Chapter-95.md)
+- [可执行文件打补丁](Part-Ⅹ/Chapter-89.md)
+- [编译器的内部](Part-Ⅹ/Chapter-90.md)
+- [编译器的异常](Part-Ⅹ/Chapter-91.md)
+- [共享存储式并行编程](Part-Ⅹ/Chapter-92.md)
+- [安腾处理器](Part-Ⅹ/Chapter-93.md)
+- [8086的内存模型](Part-Ⅹ/Chapter-94.md)
+- [基本程序块的重构](Part-Ⅹ/Chapter-95.md)
 
 ## Part XI 值得一看的博客和书
-
 - [书籍](Part-Ⅺ/Chapter-96.md)
 - [博客](Part-Ⅺ/Chapter-97.md)
-- [杂项](Part-Ⅺ/Chapter-98.md) 
-
+- [杂项](Part-Ⅺ/Chapter-98.md)
 
 后记
 -
@@ -106,7 +125,10 @@
 附录
 -
 - [x86](Appendix/Appendix-A.md)
-- [- - -](Appendix/Appendix-B.md)
+- [ARM](Appendix/Appendix-B.md)
+- [MIPS](Appendix/Appendix-C.md)
+- [一些GCC库函数](Appendix/Appendix-D.md)
+- [一些MIPS库函数](Appendix/Appendix-E.md)
 - [速查表](Appendix/Appendix-F.md)
 
 [缩略词表](Acronyms-used.md)
@@ -116,4 +138,4 @@
 [快速引索](Index.md)
 =
 [参考文献](Bibliography.md)
-= 
+=
