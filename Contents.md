@@ -23,21 +23,22 @@
 - [联合体](Part-Ⅰ/Chapter-22.md)
 - [指向函数的指针](Part-Ⅰ/Chapter-23.md)
 - [在32位环境中的64位值](Part-Ⅰ/Chapter-24.md)
-- [SIMD](Chapter-25/Chapter-25.md)
-- [64位化](Chapter-26/Chapter-26.md)
-- [使用SIMD来处理浮点数](Chapter-27/Chapter-27.md)
-- [关于ARM的特殊细节](Chapter-28/Chapter-28.md)
+- [SIMD](Part-Ⅰ/Chapter-25.md)
+- [64位化](Part-Ⅰ/Chapter-26.md)
+- [使用SIMD来处理浮点数](Part-Ⅰ/Chapter-27.md)
+- [关于ARM的特殊细节](Part-Ⅰ/Chapter-28.md)
 - [关于MIPS的特殊细节](Part-Ⅰ/Chapter-29.md)
+
+## Part II 重要的基础知识
+- [有符号数的表示](Part-Ⅱ/Chapter-30.md)
+- [字节序](Part-Ⅱ/Chapter-31.md)
+- [内存](Part-Ⅱ/Chapter-32.md)
+- [CPU](Part-Ⅱ/Chapter-33.md)
+- [哈希函数](Part-Ⅱ/Chapter-34.md)
+
 
 以下尚未整理、更新  只有基本的框架
 -
-## Part II 重要的基础知识
-- [16位Windows](Part-Ⅱ/Chapter-30.md)
-- [类](Part-Ⅱ/Chapter-31.md)
-- [ostream](Part-Ⅱ/Chapter-32.md)
-- [STL](Part-Ⅱ/Chapter-33.md)
-- [STL](Part-Ⅱ/Chapter-34.md)
-
 ## Part III 更高级些的例子
 - [35](Part-Ⅲ/Chapter-35.md)
 - [36](Part-Ⅲ/Chapter-36.md)
