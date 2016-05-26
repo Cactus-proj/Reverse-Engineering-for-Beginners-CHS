@@ -33,8 +33,8 @@ Reverse-Engineering-for-Beginners-CHS
 
 * [1.1](Part-Ⅰ/Chapter-1.md)
 * [2_最简单的函数](Part-Ⅰ/Chapter-2.md)
-* [3.3_GCC——额外的一点 / 关于实行转换函数](Part-Ⅰ/Chapter-3md)
-* [5.2.7 / 5.4 ](Part-Ⅰ/Chapter-5.md)
+* [3.3_GCC——额外的一点 / 关于实行转换函数](Part-Ⅰ/Chapter-3.md#11-关于不同指令集的一些话)
+* [5.2.7 / 5.4 ](Part-Ⅰ/Chapter-5.md#527-栈内数据的自动回收)
 * [6_Optimizing Keil 6/2013 (ARM mode) / ARM 64 / 7.1.6 ](Part-Ⅰ/Chapter-6.md)
 * [7_By the way / ARM / ARM64 /MIPS  ](Part-Ⅰ/Chapter-7.md)
 * [8.3.4 / 8.4 ](Part-Ⅰ/Chapter-8.md)
