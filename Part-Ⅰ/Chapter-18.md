@@ -3,7 +3,7 @@
 
 数组是在内存中连续排列的一组变量，这些变量具有相同类型1。
 
-## 16.1 小例子
+## 18.1 小例子
 
 ```
 #include <stdio.h>
@@ -19,11 +19,13 @@ int main()
 };
 ```
 
-### 16.1.1 x86
+### 18.1.1 x86
+#### MSVC
+
 
 编译后：
 
-Listing 16.1: MSVC
+Listing 18.1: MSVC
 
 ```
 _TEXT   SEGMENT
@@ -76,9 +78,14 @@ _main ENDP
 
 这段代码主要有两个循环：第一个循环填充数组，第二个循环打印数组元素。shl ecx,1指令使ecx的值乘以2，更多关于左移请参考17.3.1。 在堆栈上为数组分配了80个字节的空间，包含20个元素，每个元素4字节大小。
 
+Let’s try this example in OllyDbg 缺漏
+=
+
+
+#### GCC
 GCC 4.4.1编译后为：
 
-Listing 16.2: GCC 4.4.1
+Listing 18.2: GCC 4.4.1
 
 ```
             public main
@@ -129,7 +136,8 @@ main        endp
 
 顺便提一下，一个int*类型（指向int的指针）的变量—你可以使该变量指向数组并将该数组传递给另一个函数，更准确的说，传递的指针指向数组的第一个元素（该数组其它元素的地址需要显示计算）。比如a[idx]，idx加上指向该数组的指针并返回该元素。 一个有趣的例子：类似”string”字符数组的类型是const char*，索引可以应用与该指针。比如可能写作”string”[i]—正确的C/C++表达式。
 
-### 16.1.2 ARM + Non-optimizing Keil + ARM mode
+### 18.1.2 ARM
+#### ARM + Non-optimizing Keil + ARM mode
 
 ```
         EXPORT _main
@@ -166,7 +174,7 @@ loc_4C4
 
 int类型长度为32bits即4字节，20个int变量需要80（0x50）字节，因此“sub sp,sp,#0x50”指令为在栈上分配存储空间。 两个循环迭代器i被存储在R4寄存器中。 值i*2被写入数组，通过将i值左移1位实现乘以2的效果，整个过程通过”MOV R0,R4,LSL#1指令来实现。 “STR R0, [SP,R4,LSL#2]”把R0内容写入数组。过程为：SP指向数组开始，R4是i，i左移2位相当于乘以4，即*(SP+R4*4)=R0。 第二个loop的“LDR R2, [SP,R4,LSL#2]”从数组读取数值到寄存器，R2=*(SP+R4*4)。
 
-### 16.1.3 ARM + Keil + thumb 模式优化后
+#### ARM + Keil + thumb 模式优化后
 
 ```
 _main
@@ -203,7 +211,13 @@ loc_1DC
 
 Thumb代码也是非常类似的。Thumb模式计算数组偏移的移位操作使用特定的指令LSLS。 编译器在堆栈中申请的数组空间更大，但是最后4个字节的空间未使用。
 
-## 16.2 缓冲区溢出
+#### Non-optimizing GCC 4.9.1 (ARM64)
+
+### 18.1.3 MIPS
+
+
+## 18.2 缓冲区溢出
+### 18.2.1 读取外部数组的边界
 
 Array[index]中index指代数组索引，仔细观察下面的代码，你可能注意到代码没有index是否小于20。如果index大于20？这是C/C++经常被批评的特征。 以下代码可以成功编译可以工作：
 
@@ -392,7 +406,14 @@ gs          0x33            51
 
 寄存器的值与win32例子略微不同，因为堆栈布局也不太一样。
 
-## 16.3 防止缓冲区溢出的方法
+### 18.2.2 Writing beyond array bounds
+
+#### MSVC
+
+#### GCC
+
+
+## 18.3 防止缓冲区溢出的方法
 
 下面一些方法防止缓冲区溢出。MSVC使用以下编译选项：
 
@@ -401,7 +422,7 @@ gs          0x33            51
 /GZ Enable stack checks (/RTCs)
 ```
 
-一种方法是在函数局部变量和序言之间写入随机值。在函数退出之前检查该值。如果该值不一致则挂起而不执行RET。进程将被挂起。 该随机值有时被称为“探测值”。 如果使用MSVC编译简单的例子（16.1），使用RTC1和RTCs选项，将能看到函数调用@_RTC_CheckStackVars@8函数来检测“探测值“。
+一种方法是在函数局部变量和序言之间写入随机值。在函数退出之前检查该值。如果该值不一致则挂起而不执行RET。进程将被挂起。 该随机值有时被称为“探测值”。 如果使用MSVC编译简单的例子（18.1），使用RTC1和RTCs选项，将能看到函数调用@_RTC_CheckStackVars@8函数来检测“探测值“。
 
 我们来看GCC如何处理这些。我们使用alloca()(4.2.4)例子：
 
@@ -419,7 +440,7 @@ void f()
 
 我们不使用任何附加编译选项，只使用默认选项，GCC 4.7.3将插入“探测“检测代码： 
 
-Listing 16.3: GCC 4.7.3
+Listing 18.3: GCC 4.7.3
 
 ```
 .LC0:
@@ -493,9 +514,9 @@ Aborted (core dumped)
 
 gs被叫做段寄存器，这些寄存器被广泛用在MS-DOS和扩展DOS时代。现在的作用和以前不同。简要的说，gs寄存器在linux下一直指向TLS（48）--存储线程的各种信息（win32环境下，fs寄存器同样的作用，指向TIB8 9）。 更多信息请参考linux源码arch/x86/include/asm/stackprotector.h（至少3.11版本）。
 
-### 16.3.1 Optimizing Xcode (LLVM) + thumb-2 mode
+### 18.3.1 Optimizing Xcode (LLVM) + thumb-2 mode
 
-我们回头看简单的数组例子(16.1)。我们来看LLVM如何检查“探测值“。
+我们回头看简单的数组例子(18.1)。我们来看LLVM如何检查“探测值“。
 
 ```
 _main
@@ -604,7 +625,7 @@ loc_2F1C
 
 首先可以看到，LLVM循环展开写入数组，LLVM认为先计算出数组元素的值速度更快。 在函数的结尾我们能看到“探测值“的检测—局部存储的值与R8指向的标准值对比。如果相等4指令块将通过”ITTTT EQ“触发，R0写入0，函数退出。如果不相等，指令块将不会被触发，跳向___stack_chk_fail函数，结束进程。
 
-### 16.4 One more word about arrays
+### 18.4 One more word about arrays
 
 现在我们来理解下面的C/C++代码为什么不能正常使用10：
 
@@ -618,7 +639,27 @@ void f(int size)
 
 这是因为在编译阶段编译器不知道数组的具体大小无论是在堆栈或者数据段，无法分配具体空间。 如果你需要任意大小的数组，应该通过malloc()分配空间，然后访问内存块来访问你需要的类型数组。或者使用C99标准[15,6.7.5/2]，但它内部看起来更像alloca()(4.2.4)。
 
-## 16.5 Multidimensional arrays
+## 18.5 指向字符串的数组
+
+### 18.5.1 x64
+
+#### 32-bit MSVC
+
+### 18.5.2 32-bit ARM
+#### ARM in ARM mode
+
+#### ARM in Thumb mode
+
+### 18.5.3 ARM64
+
+### 18.5.4 MIPS
+
+### 18.5.5 数组溢出
+
+#### 数组溢出保护
+
+
+## 18.6 多维数组
 
 多维数组和线性数组在本质上是一样的。 因为计算机内存是线性的，它是一维数组。但是一维数组可以很容易用来表现多维的。 比如数组a[3][4]元素可以放置在一维数组的12个单元中：
 
@@ -644,9 +685,21 @@ void f(int size)
 |4  |5  |6  |7  |
 |8  |9  |10 |11 |
 
-为了计算我们需要的元素地址，首先，第一个索引乘以4（矩阵宽度），然后加上第二个索引。这种被称为行优先，C/C++和Python常用这种方法。行优先的意思是：先写入第一行，接着是第二行，…，最后是最后一行。 另一种方法就是列优先，主要用在FORTRAN,MATLAB,R等。列优先的意思是：先写入第一列，然后是第二列，…，最后是最后一列。 多维数组与此类似。 我们看个例子：
+为了计算我们需要的元素地址，首先，第一个索引乘以4（矩阵宽度），然后加上第二个索引。这种被称为行优先，C/C++和Python常用这种方法。行优先的意思是：先写入第一行，接着是第二行，…，最后是最后一行。 另一种方法就是列优先，主要用在FORTRAN,MATLAB,R等。列优先的意思是：先写入第一列，然后是第二列，…，最后是最后一列。 
 
-Listing 16.4: simple example
+### 18.6.1 二维数组的例子
+
+#### 行填充的例子
+
+#### 列填充的例子
+
+### 18.6.2 像一位数组那样访问二维数组
+
+
+### 18.6.3 多维数组
+多维数组与此类似。 我们看个例子：
+
+Listing 18.4: simple example
 
 ```
 #include <stdio.h>
@@ -659,11 +712,11 @@ void insert(int x, int y, int z, int value)
 };
 ```
 
-### 16.5.1 x86
+#### x86
 
 MSVC 2010：
 
-Listing 16.5: MSVC 2010
+Listing 18.5: MSVC 2010
 
 ```
 _DATA   SEGMENT
@@ -694,7 +747,7 @@ _TEXT ENDS
 
 多维数组计算索引公式：address=600*4*x+30*4*y+4z。因为int类型为32-bits（4字节），所以要乘以4。
 
-Listing 16.6: GCC 4.4.1
+Listing 18.6: GCC 4.4.1
 
 ```
         public insert
@@ -726,9 +779,9 @@ insert  endp
 
 GCC使用的不同的计算方法。为计算第一个操作值30y，GCC没有使用乘法指令。GCC的做法是：(???? + ????) ≪ 4 − (???? + ????) = (2????) ≪ 4 − 2???? = 2 ・ 16 ・ ???? − 2???? = 32???? − 2???? = 30????。因此30y的计算仅使用加法和移位操作，这样速度更快。
 
-### 16.5.2 ARM + Non-optimizing Xcode (LLVM) + thumb mode
+#### ARM + Non-optimizing Xcode (LLVM) + thumb mode
 
-Listing 16.7: Non-optimizing Xcode (LLVM) + thumb mode
+Listing 18.7: Non-optimizing Xcode (LLVM) + thumb mode
 
 ```
 _insert
@@ -767,9 +820,9 @@ BX          LR
 
 非优化的LLVM代码在栈中保存了所有变量，这是冗余的。元素地址的计算我们通过公式已经找到了。
 
-### 16.5.3 ARM + Optimizing Xcode (LLVM) + thumb mode
+#### ARM + Optimizing Xcode (LLVM) + thumb mode
 
-Listing 16.8: Optimizing Xcode (LLVM) + thumb mode
+Listing 18.8: Optimizing Xcode (LLVM) + thumb mode
 
 ```
 _insert
@@ -788,3 +841,21 @@ BX          LR
 ```
 
 这里的小技巧没有使用乘法，使用移位、加减法等。 这里有个新指令RSB（逆向减法），该指令的意义是让第一个操作数像SUB第二个操作数一样可以应用LSL#4附加操作。 “LDR.W R9, [R9]”类似于x86下的LEA指令（B.6.2），这里什么都没有做，是冗余的。显然，编译器没有优化它。
+
+#### MIPS 
+
+### 18.6.4 更多的例子
+
+##18.7 讲打包的字符串作为数组
+
+### 18.7.1 32-bit ARM
+
+### 18.7.2 ARM64
+
+### 18.7.3 MIPS
+
+### 18.7.4 Conclusion
+
+## 18.8 结论
+
+## 18.9 练习

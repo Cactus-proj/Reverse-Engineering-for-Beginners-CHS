@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 }
 ```
 
-## 20.1 MSVC
+## 23.1 MSVC
 
 MSVC2010 /Ox选项编译：
 
@@ -145,7 +145,7 @@ Listing 20.2: MSVCR80.DLL
 
 第二个原因是即使回调函数类型完全正确，使用错误的参数调用函数可能会导致更严重的问题。进程崩溃不是最大的问题，最大的问题是崩溃的原因—编译器很难发现这种潜在的问题。
 
-### 20.1.1 MSVC + OllyDbg
+### 23.1.1 MSVC + OllyDbg
 
 我们在OD中加载我们的例子，并在comp()函数下断点。
 
@@ -167,7 +167,7 @@ Figure 20.2: OllyDbg: the code in qsort() right a_er comp() call
 
 Figure 20.3: OllyDbg: second call of comp()
 
-### 20.1.2 MSVC + tracer
+### 23.1.2 MSVC + tracer
 
 我们来看成对比较，来对10个数字进行排序：1892, 45, 200, -98, 4087, 5, -12345, 1087, 88,-100000.
 
@@ -258,7 +258,7 @@ IDA给出了函数名字(PtFuncCompare)—IDA认为该函数指针被传递给qs
 
 Figure 20.4: tracer and IDA. N.B.: some values are cutted at right
 
-## 20.2 GCC
+## 23.2 GCC
 
 没有太大的不同：
 
@@ -324,7 +324,7 @@ Listing 20.4: (file libc.so.6, glibc version—2.10.1)
 ...
 ```
 
-### 20.2.1 GCC + GDB (with source code)
+### 23.2.1 GCC + GDB (with source code)
 
 因为我们有例子的C源代码，我们能在行数(11—第一次比较的地方)设置断点(b)。编译例子的时候使用了带有调试信息的选项(-g)，当前可以查看地址及行号，也可以打印变量(p):调试信息包含寄存器和变量值信息。
 
@@ -380,7 +380,7 @@ arg=arg@entry=0x0) at msort.c:297
 (gdb)
 ```
 
-### 20.2.2 GCC + GDB (no source code)
+### 23.2.2 GCC + GDB (no source code)
 
 更多时候我们没有源码，我们可以反汇编comp()函数（disas），找到CMP指令地址并设置断点(b)。每次中断后，dump所有寄存器的值(info registers)，堆栈信息(bt)，但是没有comp()函数对应的行号信息。
 

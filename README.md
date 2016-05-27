@@ -26,7 +26,7 @@ Reverse-Engineering-for-Beginners-CHS
 
 需要翻译的部分
 -
-新增了大量关于 ARM64 和 MIPS 的部分，尚未翻译
+新增了大量关于 ARM64 、 MIPS 、OllyDbg的部分，尚未翻译
 
 以下标出的是作者新增的段落/章节
 > 不带编号的，代表是四级标题，可以全文搜索找到相应位置
@@ -45,4 +45,15 @@ Reverse-Engineering-for-Beginners-CHS
 * [14.1.4_ARM64 / 14.1.5 / 14.2 / 14.3](Part-Ⅰ/Chapter-14.md)
 * [15.1.2_ARM64 / 15.1.3 ](Part-Ⅰ/Chapter-15.md)
 * [16](Part-Ⅰ/Chapter-16.md)
-* 
+* [17.5.1 MSVC + OllyDbg / 17.5.4 / 17.5.5 / 17.6.4 17.6.5 / 17.7.1_First OllyDbg example + 带优化的 GCC 4.4.1 / 17.7.3 / 17.7.4 / 17.8 ](Part-Ⅰ/Chapter-17.md)
+* [18.1.3 / 18.2.2 / 18.5 / 18.6.1 / MIPS /18.6.4](Part-Ⅰ/Chapter-18.md)
+* [OllyDbg / 19.2.5 / 19.3 / 19.4 / 19.5.2 / 19.5.5  / 19.6 ](Part-Ⅰ/Chapter-19.md)
+* [20](Part-Ⅰ/Chapter-20.md)
+* [21.1.1 / GDB / 21.3.3 / OllyDbg / 21.4.3 / 21.5 ](Part-Ⅰ/Chapter-21.md)
+* [22.1.2 / 22.2 / 22.3](Part-Ⅰ/Chapter-22.md)
+* [24.1 / 24.2.2 / 24.3.2 / 24.4.2 / 21.4](Part-Ⅰ/Chapter-24.md)
+* [25.1.2](Part-Ⅰ/Chapter-25.md)
+* [27.1.2 / 27.3.2 ](Part-Ⅰ/Chapter-27.md)
+* [28](Part-Ⅰ/Chapter-28.md)
+* [29](Part-Ⅰ/Chapter-29.md)
+* [— —](Part-Ⅰ/Chapter-2.md)

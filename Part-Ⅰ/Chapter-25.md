@@ -27,7 +27,7 @@ Bitslice DES2—可以同时处理块和密钥。比如说unsigned int类型变�
 
 [http://conus.info/utils/ops_SIMD/](http://conus.info/utils/ops_SIMD/)
 
-## 22.1 Vectorization
+## 25.1 Vectorization
 
 向量化3，例如循环用两个数组生成一个数组。循环体从输入数组中取值，处理后存储到另一个数组。重要的一点是操作了每一个元素。向量化—同时处理多个元素。
 
@@ -48,6 +48,9 @@ for (i = 0; i < 1024; i++)
 
 循环次数从1024变成1024/4，当然更快。
 
+
+### 25.1.1 Addition example
+
 一些简单的情况下某些编译器可以自动向量化，Intel C++5.
 
 函数如下：
@@ -61,7 +64,7 @@ int f (int sz, int *ar1, int *ar2, int *ar3)
 };
 ```
 
-### 22.1.1 Intel C++
+#### Intel C++
 
 Intel C++ 11.1.051 win32下编译：
 
@@ -262,7 +265,7 @@ movdqa  xmmword ptr [eax+edi*4], xmm1 ; ar3+i*4
 
 其他情况，将没有SSE2代码被执行。
 
-### 22.1.2 GCC
+#### GCC
 
 gcc用-O3 选项同时打开SSE2支持: -msse2.
 
@@ -395,6 +398,8 @@ _Z1fiPiS_S_     endp
 ```
 
 几乎一样，但没有Intel的细致。
+
+### 25.1.2 Memory copy example
 
 ## 22.2 SIMD strlen() implementation
 
