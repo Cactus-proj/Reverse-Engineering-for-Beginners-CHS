@@ -52,7 +52,7 @@
 - [字符串截取](Part-Ⅲ/Chapter-47.md)
 - [toupper()函数](Part-Ⅲ/Chapter-48.md)
 - [不正确的反汇编代码](Part-Ⅲ/Chapter-49.md)
-- [代码混淆](Part-Ⅲ/Chapter-50.md)
+- [花指令](Part-Ⅲ/Chapter-50.md)
 - [C++](Part-Ⅲ/Chapter-51.md)
 - [负的数组引索](Part-Ⅲ/Chapter-52.md)
 - [Windoes 16-bit](Part-Ⅲ/Chapter-53.md)
