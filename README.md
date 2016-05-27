@@ -22,12 +22,14 @@ Reverse-Engineering-for-Beginners-CHS
 需要检查的部分
 -
 因为作者有较多的更新，章节变动也较大，所以每一章都需要检查
-> 目前进度0% 
+> [目前进度0%](https://github.com/inkydragon/Reverse-Engineering-for-Beginners-CHS/blob/master/checklist.md) 
 
 需要翻译的部分
 -
 新增了大量关于 ARM64 、 MIPS 、OllyDbg的部分，尚未翻译
 
+小段翻译可直接提交或者[先占坑](https://github.com/inkydragon/Reverse-Engineering-for-Beginners-CHS/issues/3)，大段的/整章节翻译，请开一个新的 issue,以免重复劳动
+=
 以下标出的是作者新增的段落/章节
 > 不带编号的，代表是四级标题，可以全文搜索找到相应位置
 
@@ -57,3 +59,4 @@ Reverse-Engineering-for-Beginners-CHS
 * [28](Part-Ⅰ/Chapter-28.md)
 * [29](Part-Ⅰ/Chapter-29.md)
 * [— —](Part-Ⅰ/Chapter-2.md)
+
