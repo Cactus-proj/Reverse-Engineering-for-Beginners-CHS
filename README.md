@@ -58,5 +58,9 @@ Reverse-Engineering-for-Beginners-CHS
 * [27.1.2 / 27.3.2 ](Part-Ⅰ/Chapter-27.md)
 * [28](Part-Ⅰ/Chapter-28.md)
 * [29](Part-Ⅰ/Chapter-29.md)
-* [— —](Part-Ⅰ/Chapter-2.md)
+* [30-34章](Part-Ⅱ)
+* [36,38-42,45-48,52章](Part-Ⅲ)
+* [43.1 / 43.1.2](Part-Ⅲ/Chapter-43.md)
+* [51.2](Part-Ⅲ/Chapter-51.md)
+* [— —](Part-Ⅳ/Chapter-5.md)
 
