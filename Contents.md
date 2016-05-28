@@ -1,3 +1,5 @@
+[封面](Cover.md)
+
 ## Part I 代码模式
 1. [CPU简介](Part-Ⅰ/Chapter-1.md)
 - [最简单的函数](Part-Ⅰ/Chapter-2.md)
