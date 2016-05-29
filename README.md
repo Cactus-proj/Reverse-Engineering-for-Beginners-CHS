@@ -3,7 +3,7 @@ Reverse-Engineering-for-Beginners-CHS
 
 #0x00 说明
 
-该项目起初为某同性交友团体翻译某本bl文的项目地址，异性恋请勿点击
+该项目起初为某同性交友团体翻译某本bl文的[项目地址](https://github.com/woolabs/Reverseng)，异性恋请勿点击
 
 #0x01 第一期的翻译贡献人员
 
