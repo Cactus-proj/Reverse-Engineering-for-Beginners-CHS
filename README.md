@@ -36,7 +36,7 @@ Reverse-Engineering-for-Beginners-CHS
 
 > 不带编号的，代表是四级标题，可以全文搜索找到相应位置
 
-* [封面](Cover.md)
+1. [封面](Cover.md)
 * [1.1](Part-Ⅰ/Chapter-1.md)
 * [2](Part-Ⅰ/Chapter-2.md)
 * [3.3 / 关于实行转换函数](Part-Ⅰ/Chapter-3.md)
