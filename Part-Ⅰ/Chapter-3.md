@@ -372,7 +372,6 @@ armcc编译器可以生成intel语法的汇编程序列表，但是里面有高�
 代码清单 3.11: 无优化的 Keil 6/2013 (ARM 模式) IDA
 
 ```
-#!bash
 .text:00000000                  main
 .text:00000000 10 40 2D E9              STMFD SP!, {R4,LR}
 .text:00000004 1E 0E 8F E2              ADR R0, aHelloWorld ; "hello, world"
@@ -383,15 +382,11 @@ armcc编译器可以生成intel语法的汇编程序列表，但是里面有高�
 .text:000001EC 68 65 6C 6C +aHelloWorld  DCB "hello, world",0 ; DATA XREF: main+4
 ```
 
-针对ARM处理器，我们需要预备一点知识，要知道ARM处理器至少有2种模式：ARM模式和thumb模式，在ARM模式下，所有的指令都被激活并且都是32位的。在thumb模式下所有的指令都是16位的。Thumb模式比较需要注意，因为程序可能需要更为紧凑，或者当微处理器用的是16位内存地址时会执行的更快。但也存在缺陷，在thumb模式下可用的指令没ARM下多，只有8个寄存器可以访问，有时候ARM模式下一条指令就能解决的问题，thumb模式下需要多个指令来完成。
+在例子中，我们可以发现所有指令都是4字节的，因为我们编译的时候选择了ARM模式，而不是Thumb模式。
 
-从ARMv7开始引入了thumb-2指令集。这是一个加强的thumb模式。拥有了更多的指令，通常会有误解，感觉thumb-2是ARM和thumb的混合。Thumb-2加强了处理器的特性，并且媲美ARM模式。程序可能会混合使用2种模式。其中大量的ipod/iphone/ipad程序会使用thumb-2是因为Xcode将其作为了默认模式。
+最开始的指令是`STMFD SP!, {R4, LR}`，这条指令类似x86平台的`PUSH`指令，会把2个寄存器（R4和LR）的值写到栈里。不过为了简化，在`armcc`编译器输出的汇编代码里会写成`PUSH {R4, LR}`，但这并不准确，因为PUSH命令只在Thumb模式下可用，所以为了减少困惑，我们用IDA来做反汇编工具。
 
-在例子中，我们可以发现所有指令都是4bytes的，因为我们编译的时候选择了ARM模式，而不是thumb模式。
-
-最开始的指令是`STMFD SP!, {R4, LR}`，这条指令类似x86平台的PUSH指令，会写2个寄存器（R4和LR）的变量到栈里。不过在armcc编译器里输出的汇编列表里会写成`PUSH {R4, LR}`，但这并不准确，因为PUSH命令只在thumb模式下有，所以我建议大家注意用IDA来做反汇编工具。
-
-这指令开始会减少SP的值，已加大栈空间，并且将R4和LR写入分配好的栈里。
+这指令开始会减少`SP`的值，已加大栈空间，并且将R4和LR写入分配好的栈里。
 
 这条指令（类似于PUSH的STMFD）允许一次压入好几个值，非常实用。有一点跟x86上的PUSH不同的地方也很赞，就是这条指令不像x86的PUSH只能对sp操作，而是可以指定操作任意的寄存器。
 
@@ -399,10 +394,9 @@ armcc编译器可以生成intel语法的汇编程序列表，但是里面有高�
 
 `BL __2print`这条指令用于调用printf()函数，这是来说下这条指令时如何工作的：
 
-```
-将BL指令（0xC）后面的地址写入LR寄存器；
-然后把printf()函数的入口地址写入PC寄存器，进入printf()函数。
-```
+* 将BL指令（0xC）后面的地址写入LR寄存器；
+* 然后把printf()函数的入口地址写入PC寄存器，进入printf()函数。
+
 
 当printf()函数完成之后，函数会通过LR寄存器保存的地址，来进行返回操作。
 
@@ -418,13 +412,14 @@ armcc编译器可以生成intel语法的汇编程序列表，但是里面有高�
 
 汇编代码里的DCB关键字用来定义ASCII字串数组，就像x86汇编里的DB关键字。
 
-## 3.4.2未进行代码优化的Keil 6/2013 编译： thumb模式
+### 3.4.2未进行代码优化的Keil 6/2013 编译： thumb模式
 
-让我们用下面的指令讲例程用Keil的thumb模式来编译一下。
+让我们用下面的指令，将相同的例子用Keil的thumb模式来编译一下。
 
 `armcc.exe –thumb –c90 –O0 1.c`
 
-我们可以在IDA里得到下面这样的代码： Listing 2.10:Non-optimizing Keil + thumb mode + IDA
+我们可以在IDA里得到下面这样的代码： 
+Listing 3.12: Non-optimizing Keil 6/2013 (Thumb mode) + IDA
 
 ```
 .text:00000000            main
@@ -446,7 +441,7 @@ Xcode 4.6.3不开启代码优化的情况下，会产生非常多冗余的代码
 
 开启-O3编译选项
 
-Listing2.11：Optimizing Xcode(LLVM)+ARM mode
+Listing 3.13: Optimizing Xcode 4.6.3 (LLVM) (ARM mode)
 
 ```
 __text:000028C4         _hello_world
@@ -483,11 +478,11 @@ puts()函数效率更快是因为它只是做了字串的标准输出(stdout)并
 
 下面，我们可以看到非常熟悉的`"MOV R0, #0"`指令，用来将R0寄存器设为0。
 
-## 3.4.4 开启代码优化的Xcode(LLVM)编译thumb-2模式
+### 3.4.4 开启代码优化的Xcode(LLVM)编译thumb-2模式
 
 在默认情况下，Xcode4.6.3会生成如下的thumb-2代码
 
-Listing 2.12:Optimizing Xcode(LLVM)+thumb-2 mode
+Listing 3.14: Optimizing Xcode 4.6.3 (LLVM) (Thumb-2 mode)
 
 ```
 __text:00002B6C                _hello_world
@@ -534,4 +529,25 @@ __symbolstub1:00003FEC 44 F0 9F E5  LDR PC, =__imp__puts
 
 在上面的例子（ARM编译的那个例子）中BL指令也是跳转到了同一个thunk function里。尽管没有进行模式的转变（所以指令里不存在那个”X”）。
 
-#### 关于实行转换函数
+#### 关于形实转换函数
+
+
+### 3.4.5 ARM64
+
+**GCC**
+
+## 3.5 MIPS
+### 3.5.1
+
+### 3.5.2
+
+### 3.5.3
+
+
+### 3.5.4
+
+### 3.5.5
+
+## 3.5.5
+
+## 3.7
