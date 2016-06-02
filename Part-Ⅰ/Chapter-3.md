@@ -1,7 +1,7 @@
 # 第三章
 # Hello,world!
 
-让我们用最著名的代码例子开始吧：
+让我们用《C语言程序设计》中最著名的代码例子开始吧：
 
 ```
 #include <stdio.h>
@@ -13,93 +13,89 @@ int main() {
 
 # 3.1 x86
 
-## 3.1.1 MSVC-x86
+## 3.1.1 MSVC
 
 在MSVC 2010中编译一下：
 
 `cl 1.cpp /Fa1.asm`
-
-（/Fa 选项表示生产汇编列表文件）
+ 
+（/Fa 选项表示让编译器生产汇编列表文件）
+清单 3.1: MSVC 2010
 
 ```
 CONST   SEGMENT
-    $SG3830 DB     'hello, world', 00H
+$SG3830 DB     'hello, world', 00H
 CONST   ENDS
 PUBLIC  _main
 EXTRN   _printf:PROC
 ; Function compile flags: /Odtp
 _TEXT   SEGMENT
 _main   PROC
-    push ebp
-    mov ebp, esp
-    push OFFSET $SG3830
-    call _printf
-    add esp, 4
-    xor eax, eax
-    pop ebp
-    ret 0
+    	push 	ebp
+    	mov 	ebp, esp
+    	push 	OFFSET $SG3830
+    	call 	_printf
+    	add 	esp, 4
+    	xor 	eax, eax
+    	pop 	ebp
+    	ret 	0
 _main   ENDP
 _TEXT   ENDS
 ```
 
-MSVC生成的是Intel汇编语法。Intel语法与AT&T语法的区别将在后面讨论。
+MSVC生成的是Intel汇编语法。Intel语法与AT&T语法的区别将会在后面讨论。
 
-编译器会把1.obj文件连接成1.exe。
+编译器会把`1.obj`文件连接成`1.exe`。
 
-在我们的例子当中，文件包含两个部分：CONST（放数据）和_TEXT（放代码）。
+在我们的例子当中，文件包含两个部分：`CONST`（放数据）和`_TEXT`（放代码）。
 
-字符串`"hello,world"`在C/C++ 类型为`const char*`，然而它已经丢失了自己的名称。
+字符串`"hello,world"`在C/C++ 类型为`const char[]`，然而它没有自己的变量名。
 
-编译器需要处理这个字符串，就自己给他定义了一个$SG3830。
+编译器需要以某种方法处理这个字符串，于是就自己给他定义了一个内部名称`$SG3830`。
 
 所以例子可以改写为：
 
 ```
 #include <stdio.h>
-const char *$SG3830="hello, world";
-int main() {
+
+const char $SG3830[]="hello, world\n";
+
+int main() 
+{
     printf($SG3830);
     return 0;
-};
+}
 ```
 
-我们回到汇编列表，正如我们看到的，字符串是由0字节结束的，这也是C/C++的标准。
+我们回到汇编代码，正如我们看到的，字符串是由0字节结束的，这也是C/C++的标准。
 
-在代码部分，`_TEXT`，只有一个函数：main()。
+在代码部分，`_TEXT`，只有一个函数：main()。函数main()与大多数函数一样都有开始的代码与结束的代码。
 
-函数main()与大多数函数一样都有开始的代码与结束的代码。
+函数当中的开始代码结束以后，调用了printf()函数：`CALL _printf`。在被调用之前，保存我们问候语字符串的地址（或指向它的指针），已经在PUSH指令的帮助下，被存放在栈当中。
 
-函数当中的开始代码结束以后，调用了printf()函数：`CALL _printf`。
+当printf()函数执行完返回到main()函数的时候，字符串地址(或指向它的指针)仍然在堆栈中。当我们完全不需要它的时候，堆栈指针（ESP寄存器）需要被修正。
 
-在PUSH指令的帮助下，我们问候语字符串的地址（或指向它的指针）在被调用之前存放在栈当中。
+`ADD ESP, 4`意思是ESP寄存器的值加4。
 
-当printf()函数执行完返回到main()函数的时候，字符串地址(或指向它的指针)仍然在堆栈中。
+为什么是4呢？因为这是32位的程序，通过栈传送地址刚好需要4个字节。如果是64位的代码则需要8字节。`ADD ESP, 4`在效率上等同于`POP register`。
 
-当我们都不再需要它的时候，堆栈指针（ESP寄存器）需要改变。
+一些编辑器（如Intel C++编译器）在同样的情况下可能会用`POP ECX`代替ADD（例如这样的模式可以在Oracle RDBMS代码中看到，因为它是由Intel C++编译器编译的），这条指令的效果基本相同，但是ECX的寄存器内容会被改写。Intel C++编译器可能用`POP ECX`，因为这比`ADD ESP, X`需要的字节数更短，（1字节对应3字节）。
 
-`ADD ESP, 4`
+这里有一个在Oracle RDBMS中用`POP`而不用`ADD`的例子。
+清单 3.2: Oracle RDBMS 10.2 Linux (app.o 文件)
+```
+.text:0800029A 		push 	ebx
+.text:0800029B 		call 	qksfroChild
+.text:080002A0 		pop 	ecx
+```
 
-意思是ESP寄存器加4。
+在调用printf()之后，原来的C/C++代码执行`return 0`，返回0当做main()函数的返回结果。在生成的代码中，这被编译成指令`XOR EAX, EAX`。
 
-为什么是4呢？由于是32位的代码，通过栈传送地址刚好需要4个字节。
+XOR事实上就是异或，但是编译器经常用它来代替`MOV EAX, 0`原因就是它需要的字节更短（`XOR`需要2字节对应`MOV`需要5字节）。
 
-在64位系统当中它是8字节。
+有些编译器则用`SUB EAX, EAX` 就是EXA的值减去EAX，也就是返回0。
 
-`ADD ESP, 4`实际上等同于`POP register`。
-
-一些编辑器（如Intel C++编译器）在同样的情况下可能会用`POP ECX`代替ADD（例如这样的模式可以在Oracle RDBMS代码中看到，因为它是由Intel C++编译器编译的），这条指令的效果基本相同，但是ECX的寄存器内容会被改写。
-
-Intel C++编译器可能用`POP ECX`，因为这比`ADD ESP, X`需要的字节数更短，（1字节对应3字节）。
-
-在调用printf()之后，在C/C++代码之后执行`return 0`，`return 0`是main()函数的返回结果。
-
-代码被编译成指令`XOR EAX, EAX`。
-
-XOR事实上就是异或，但是编译器经常用它来代替`MOV EAX, 0`原因就是它需要的字节更短（2字节对应5字节）。
-
-有些编译器用`SUB EAX, EAX` 就是EXA的值减去EAX，也就是返回0。
-
-最后的指令RET 返回给调用者，他是C/C++代码吧控制返还给操作系统。
+最后的`RET`指令返回控制权给调用者。通常这是C/C++的库函数代码，它会按顺序，把控制权返还给操作系统。
 
 ## 3.1.2 GCC
 
@@ -107,13 +103,11 @@ XOR事实上就是异或，但是编译器经常用它来代替`MOV EAX, 0`原�
 
 `gcc 1.c -o 1`
 
-下一步，在IDA反汇编的帮助下，我们看看main()函数是如何被创建的。
+下一步，在IDA反汇编的帮助下，我们看看main()函数是如何被创建的。IDA与MSVC一样，也是显示Intel语法。
 
-（IDA与MSVC一样，也是显示Intel语法）。
+我们也可以是GCC生成Intel语法的汇编代码，添加参数`-S -masm=intel`
 
-我也可以是GCC生成Intel语法的汇编代码，添加参数`-S -masm=intel`
-
-汇编代码：
+代码清单 3.3:IDA里的代码
 
 ```
 main proc near
@@ -133,70 +127,68 @@ main            endp
 
 结果几乎是相同的，`"hello,world"`字符串地址（保存在data段的）一开始保存在EAX寄存器当中，然后保存到栈当中。
 
-同样的在函数开始我们看到了
+此外在函数开始我们看到了`AND ESP, 0FFFFFFF0h`，这条指令将ESP寄存器中的值对齐为16字节。这让堆栈中的所有值，都被以相同的方式对齐。(如果分配的内存地址大小被对齐为4或16字节，CPU的性能会更好。)
 
-`AND ESP, 0FFFFFFF0h`
+`SUB ESP，10H`在栈上分配16个字节。 虽然在下面我们可以看到，这里其实只需要4个字节。
 
-这条指令该指令对齐在16字节边界在ESP寄存器中的值。这导致堆栈对准的所有值。
+这是因为分配的堆栈的大小也被对齐为16位。
 
-`SUB ESP，10H`在栈上分配16个字节。 这里其实只需要4个字节。
+该字符串的地址（或这个字符串指针），不使用PUSH指令，直接存入到堆栈空间。`var_10`，是一个局部变量，也是`printf()`的参数。
 
-这是因为，分配堆栈的大小也被排列在一个16字节的边界。
+然后调用`printf()`函数。
 
-该字符串的地址（或这个字符串指针），不使用PUSH指令，直接写入到堆栈空间。var_10，是一个局部变量，也是printf()的参数。
+不像MSVC，当gcc编译不开启优化时，它使用`MOV EAX，0`清空EAX，而不用更短的指令。
 
-然后调用printf()函数。
+最后一条指令，`LEAVE`相当于`MOV ESP，EBP`和POP EBP两条指令。换句话说，这相当于指令将堆栈指针（ESP）恢复，将EBP寄存器复原到其初始状态。
 
-不像MSVC，当gcc编译不开启优化，它使用`MOV EAX，0`清空EAX，而不是更短的代码。
-
-最后一条指令，LEAVE相当于MOV ESP，EBP和POP EBP两条指令。
-
-换句话说，这相当于指令将堆栈指针（ESP）恢复，EBP寄存器到其初始状态。
-
-这是必须的，因为我们在函数的开头修改了这些寄存器的值（ESP和EBP）（执行MOV EBP，ESP/AND ESP...）。
+这是很有必要的，因为我们在函数的开头修改了这些寄存器的值（ESP和EBP）（执行`MOV EBP，ESP`/`AND ESP, ...`）。
 
 ## 3.1.3 GCC:AT&T 语法
 
 我们来看一看在AT&T当中的汇编语法，这个语法在UNIX当中更普遍。
-
+代码清单 3.4: 让我们用 GCC 4.7.3 编译
 `gcc -S 1_1.c`
 
 我们将得到这个：
 
+代码清单 3.5: GCC 4.7.3
 ```
-    .file   "1_1.c"
-    .section    .rodata
+    	.file   "1_1.c"
+    	.section    .rodata
 .LC0:
-    .string "hello, world"
-    .text
-    .globl  main
-    .type   main, @function
+    	.string "hello, world"
+    	.text
+    	.globl  main
+    	.type   main, @function
 main:
 .LFB0:
-    .cfi_startproc
-    pushl %ebp
-    .cfi_def_cfa_offset 8
-    .cfi_offset 5, -8
-    movl %esp, %ebp
-    .cfi_def_cfa_register 5
-    andl $-16, %esp
-    subl $16, %esp
-    movl $.LC0, (%esp)
-    call printf
-    movl $0, %eax
-    leave
-    .cfi_restore 5
-    .cfi_def_cfa 4, 4
-    ret
-    .cfi_endproc
+    	.cfi_startproc
+    	pushl %ebp
+    	.cfi_def_cfa_offset 8
+    	.cfi_offset 5, -8
+    	movl %esp, %ebp
+    	.cfi_def_cfa_register 5
+    	andl $-16, %esp
+    	subl $16, %esp
+    	movl $.LC0, (%esp)
+    	call printf
+    	movl $0, %eax
+    	leave
+    	.cfi_restore 5
+    	.cfi_def_cfa 4, 4
+    	ret
+    	.cfi_endproc
 .LFE0:
-    .size   main, .-main
-    .ident  "GCC: (Ubuntu/Linaro 4.7.3-1ubuntu1) 4.7.3"
-    .section        .note.GNU-stack, "", @progbits
+    	.size   main, .-main
+    	.ident  "GCC: (Ubuntu/Linaro 4.7.3-1ubuntu1) 4.7.3"
+    	.section        .note.GNU-stack, "", @progbits
 ```
 
-有很多的宏（用点开始）。现在为了简单起见，我们先不看这些。（除了 .string ，就像一个C字符串编码一个null结尾的字符序列）。然后，我们将看到这个：
+这段代码包含了很多的宏（用点开始）。目前我们不关心这个。
 
+现在为了简单起见，我们先不看这些。（除了 .string ，就像C-string一样，编码一个null结尾的字符序列）。然后，我们将看到这个：
+
+代码清单 3.6: GCC 4.7.3
 ```
 .LC0:
     .string "hello, world"
@@ -212,34 +204,29 @@ main:
     ret
 ```
 
-在Intel与AT&T语法当中比较重要的区别就是：
+在Intel与AT&T语法当中一些主要的区别就是：
 
-操作数写在后面
+* 操作数写在后面  
+	在Intel语法中：\<instruction> \<destination operand> \<source operand>  
+	在AT&T语法中：\<instruction> \<source operand> \<destination operand>  
+	有一个记住它们的方法: 当你面对intel语法的时候，你可以想象把等号(=)放到2个操作数中间，当面对AT&T语法的时候，你可以放一个右箭头(→）到两个操作数之间。  
+* AT&T: 在寄存器名之前需要写一个百分号(%)并且在数字前面需要美元符($)。方括号被圆括号替代。 
+* AT&T: 一些添加到操作符后，用来表示数据形式的后缀：  
+	– q — quad (64 bits)  
+	– l — long (32 bits)  
+	– w — word (16 bits)  
+	– b — byte (8 bits)  
 
-```
-在Intel语法中：<instruction> <destination operand> <source operand>
-在AT&T语法中：<instruction> <source operand> <destination operand>
-```
+让我们回到上面的编译结果：它和在IDA里看到的是一样的。只有一点不同：0FFFFFFF0h 被写成了$-16，但这是一样的，10进制的16在16进制里表示为0x10。-0x10就等同于0xFFFFFFF0(针对于32位的数据类型)。
 
-有一个理解它们的方法: 当你面对intel语法的时候，你可以想象把等号放到2个操作数中间，当面对AT&T语法的时候，你可以放一个右箭头(→）到两个操作数之间。
-
-AT&T: 在寄存器名之前需要写一个百分号(%)并且在数字前面需要美元符($)。方括号被圆括号替代。 AT&T: 一些用来表示数据形式的特殊的符号
-
-```
-l      long(32 bits)
-w      word(16bits)
-b      byte(8 bits)
-```
-
-让我们回到上面的编译结果：它和在IDA里看到的是一样的。只有一点不同：0FFFFFFF0h 被写成了$-16，但这是一样的，10进制的16在16进制里表示为0x10。-0x10就等同于0xFFFFFFF0(这是针对于32位构架)。
-
-外加返回值这里用的MOV来设定为0，而不是用XOR。MOV仅仅是加载（load）了变量到寄存器。指令的名称并不直观。在其他的构架上，这条指令会被称作例如”load”这样的。
+另外：返回值通常用`MOV`置0，而不用`XOR`。MOV仅仅加载（load）了一个值到寄存器。指令的名称并不直观(数据不会被移动，而是被复制)。在其他的构架上，这条指令会被称作“LOAD” 、 “STORE”或其他类似的名称。
 
 # 3.2 x86-64
 
 ## 3.2.1 MSVC-x86-64
 
 让我们来试试64-bit的MSVC：
+代码清单 3.7: MSVC 2012 x64
 
 ```
 $SG2989 DB      'hello, world', 00H
@@ -253,7 +240,7 @@ main    PROC
 main ENDP
 ```
 
-在x86-64里，所有被扩展到64位的寄存器都有R-前缀。并且尽量不用栈来传递函数的参数了，大量使用寄存器来传递参数，非常类似于fastcall。
+在x86-64里，所有的寄存器都被扩展到64位，并且名字前都带有R-前缀。并且尽量不用栈来传递函数的参数了，大量使用寄存器来传递参数，非常类似于fastcall。
 
 在win64里，RCX,RDX,R8,R9寄存器被用来传递函数参数，如果还有更多就使用栈，在这里我们可以看到printf()函数的参数没用通过栈来传递，而是使用了rcx。 让我们针对64位来看，作为64位寄存器会有R-前缀，并且这些寄存器向下兼容，32位的部分使用E-前缀。
 
@@ -264,6 +251,7 @@ main ENDP
 ## 3.2.2 GCC-x86-64
 
 这次试试GCC在64位的Linux里：
+代码清单 3.8: GCC 4.4.6 x64
 
 ```
     .string "hello, world"
