@@ -11,9 +11,9 @@ int main() {
 };
 ```
 
-# 3.1 x86
+## 3.1 x86
 
-## 3.1.1 MSVC
+### 3.1.1 MSVC
 
 在MSVC 2010中编译一下：
 
@@ -97,7 +97,7 @@ XOR事实上就是异或，但是编译器经常用它来代替`MOV EAX, 0`原�
 
 最后的`RET`指令返回控制权给调用者。通常这是C/C++的库函数代码，它会按顺序，把控制权返还给操作系统。
 
-## 3.1.2 GCC
+### 3.1.2 GCC
 
 现在我们尝试同样的C/C++代码在linux中的GCC 4.4.1编译
 
@@ -143,7 +143,7 @@ main            endp
 
 这是很有必要的，因为我们在函数的开头修改了这些寄存器的值（ESP和EBP）（执行`MOV EBP，ESP`/`AND ESP, ...`）。
 
-## 3.1.3 GCC:AT&T 语法
+### 3.1.3 GCC:AT&T 语法
 
 我们来看一看在AT&T当中的汇编语法，这个语法在UNIX当中更普遍。
 代码清单 3.4: 让我们用 GCC 4.7.3 编译
@@ -221,9 +221,9 @@ main:
 
 另外：返回值通常用`MOV`置0，而不用`XOR`。MOV仅仅加载（load）了一个值到寄存器。指令的名称并不直观(数据不会被移动，而是被复制)。在其他的构架上，这条指令会被称作“LOAD” 、 “STORE”或其他类似的名称。
 
-# 3.2 x86-64
+## 3.2 x86-64
 
-## 3.2.1 MSVC-x86-64
+### 3.2.1 MSVC-x86-64
 
 让我们来试试64-bit的MSVC：
 代码清单 3.7: MSVC 2012 x64
@@ -240,17 +240,20 @@ main    PROC
 main ENDP
 ```
 
-在x86-64里，所有的寄存器都被扩展到64位，并且名字前都带有R-前缀。并且尽量不用栈来传递函数的参数了，大量使用寄存器来传递参数，非常类似于fastcall。
+在x86-64里，所有的寄存器都被扩展到64位，并且名字前都带有R-前缀。为了减少栈的使用(即减少对外部内存/缓存的访问)，通常的做法是：用寄存器来传递参数（类似于fastcall）。也就是，一部分参数通过寄存器传递，其余的通过栈传递。
 
-在win64里，RCX,RDX,R8,R9寄存器被用来传递函数参数，如果还有更多就使用栈，在这里我们可以看到printf()函数的参数没用通过栈来传递，而是使用了rcx。 让我们针对64位来看，作为64位寄存器会有R-前缀，并且这些寄存器向下兼容，32位的部分使用E-前缀。
+在win64里，RCX,RDX,R8,R9寄存器被用来传递函数的4个参数，在这里我们可以看到指向给printf()函数的字符串的指针，没有用通过栈，而是用了`RCX`来传递。这些指针现在是64位的，所以他们通过64位寄存器来传递(带有R-前缀)，并且为了向后兼容，依旧可以使用E-前缀，访问32位的部分。
 
 如下图所示，这是RAX/EAX/AX/AL在64位x86兼容cpu里的情况 ￼![](pic/C3-1.jpg)
 
-在main()函数会返回一个int类型的值，在64位的程序里为了兼容和移植性，还是用32位的，所以可以看到EAX（寄存器的低32位部分）在函数最后替代RAX被清空成0。
+在main()函数会返回一个int类型的值，在C/C++里为了兼容和移植性，依旧是32位的。这就是问什么，是`EAX`而不是`RAX`（即寄存器的低32位部分）在函数最后被清0。
 
-## 3.2.2 GCC-x86-64
+在寄存器里也有40字节被分配给了局部堆栈。这被称为“影子空间”。这一点我们之后会提及：8.2.1 。
+
+### 3.2.2 GCC-x86-64
 
 这次试试GCC在64位的Linux里：
+
 代码清单 3.8: GCC 4.4.6 x64
 
 ```
@@ -265,13 +268,17 @@ main:
     ret
 ```
 
-在Linux,\*BSD和Mac OS X里使用同一种方式来传递函数参数。头6个参数使用`RDI,RSI,RDX,RCX,R8,R9`来传递的，剩下的要靠栈。
+在Linux,\*BSD和Mac OS X里也使用同一种方式来传递函数参数。
 
-所以在这个程序里，字串的指针被放到EDI（RDI的低32位部）。为什么不是64位寄存器RDI那？
+前6个参数使用`RDI,RSI,RDX,RCX,R8,R9`来传递的，剩下的用栈。
 
-这是一个重点，在64位模式下，对低32位进行操作的时候，会清空高32位的内容。比如 MOV EAX，011223344h将会把值写到RAX里，并且清空RAX的高32位区域。 如果我们打开编译好的对象文件(object file[.o]),我们会看到所有的指令：
+所以在这个程序里，字符串指针被放到`EDI`（RDI的低32位部分）。但是为什么不用RDI的64位部分呢？
 
-Listing 2.8：GCC 4.4.6 x64
+很有必要记住：`MOV`指令在64位模式下，对低32位进行写入操作的时候，会清空高32位的内容[Int13]。比如 `MOV EAX，011223344h`将会把值写到RAX里，并且清空RAX的高32位区域。 
+
+如果我们打开编译好的对象文件(object file[.o]),我们会看到所有的指令的操作符：
+
+代码清单 3.9: GCC 4.4.6 x64
 
 ```
 .text:00000000004004D0                     main proc near
@@ -285,30 +292,84 @@ Listing 2.8：GCC 4.4.6 x64
 .text:00000000004004E6                     main endp
 ```
 
-就像看到的那样，在04004d4那行给edi写字串指针的那句花了5个bytes。如果把这句换做给rdi写指针，会花掉7个bytes.就是说GCC在试图节省空间，为此数据段(data segment)中包含的字串不会被分配到高于4GB地址的空间上。
+就像看到的那样，在`0x4004D4`那行写入`EDI`花了5个字节。如果把这句换向`EDI`给写入64位的值，会花掉7个字节.显然，GCC在试图节省空间，除此之外，数据段(data segment)中包含的字串不会被分配到高于4GiB地址的空间上。
 
-可以看到在printf()函数调用前eax被清空了，这样做事因为要eax被用作传递向量寄存器(vector registers)的个数。
-
-参考【21】 MichaelMatz/JanHubicka/AndreasJaeger/MarkMitchell. Systemvapplicationbinaryinterface.amdarchitecture processor supplement, . Also available as http://x86-64.org/documentation/abi.pdf.
+可以看到在printf()函数调用前，`EAX`被清空了，这是因为在x86-64的 *NIX 系统上， 使用过的向量寄存器(vector registers)的数量会被传入`EAX` [Mit13]。
 
 
-# 3.3 GCC——额外的一点
+## 3.3 关于GCC 额外的一点
 
+匿名的C字符串有常量的类型(3.1.1)，并且C字符串在常量段被分配的地址是一定不变的。基于这样的事实，就有一个有趣的结论：编译器可能只用了字符串的一部分。
+让我们看看这个例子：
 
+```
+#include <stdio.h>
 
-# 3.4 ARM
+int f1()
+{
+	printf ("world\n");
+}
+int f2()
+{
+	printf ("hello world\n");
+}
+int main()
+{
+	f1();
+	f2();
+}
+```
+一般的C/C++编译器(包括MSVC)会分配给地址两个字符串，但是让我们看看GCC干了什么：
+代码清单 3.10: GCC 4.8.1 + IDA listing
+```
+f1 		proc near
 
-根据作者自身对ARM处理器的经验，选择了2款在嵌入式开发流行的编译器，Keil Release 6/2013和苹果的Xcode 4.6.3 IDE(其中使用了LLVM-GCC4.2编译器)，这些可以为ARM兼容处理器和系统芯片(System on Chip)(SOC))来进行编码。比如ipod/iphone/ipad,windows8 rt,并且包括raspberry pi。
+s 		= dword ptr -1Ch
+		sub 	esp, 1Ch
+		mov 	[esp+1Ch+s], offset s ; "world\n"
+		call 	_puts
+		add 	esp, 1Ch
+		retn
+f1 		endp
 
-## 3.3.1 未进行代码优化的Keil 6/2013 编译：ARM模式
+f2 		proc near
+
+s 		= dword ptr -1Ch
+
+		sub 	esp, 1Ch
+		mov 	[esp+1Ch+s], offset aHello ; "hello "
+		call	_puts
+		add 	esp, 1Ch
+		retn
+f2 		endp
+
+aHello 	db 'hello '
+s 		db 'world',0xa,0
+```
+真的！当我们打印"hello world"字符串时，这两个单词被放在内存里相邻的位置。函数f2()中调用的`puts()`并不知道字符串已经被分开了。事实上字符串并没有被分开，只是在代码里被无形的分开了。
+
+当`puts()`被f1()调用时，他使用“world”字符串加上一个0，`puts()`并不清楚字符串之后还有什么。
+
+这个聪明的小技巧至少在GCC里被经常使用，他能够节省一些内存。
+
+## 3.4 ARM
+
+根据作者自身对ARM处理器的经验，选择了几款在嵌入式开发流行的编译器：
+* 嵌入式领域很流行的：Keil Release 6/2013
+* 苹果的Xcode 4.6.3 IDE(其中使用了LLVM-GCC4.2编译器)
+* GCC 4.9 (Linaro) (for ARM64)
+
+32位ARM的代码(包括Thumb 和 Thumb-2模式)被用在这本书的所有例子里，如果未做其他提示，我们谈论64位ARN是会叫他ARM64.
+
+### 3.3.1 未进行代码优化的Keil 6/2013 编译：ARM模式
 
 让我们在Keil里编译我们的例子
 
 `armcc.exe –arm –c90 –O0 1.c`
 
-armcc编译器可以生成intel语法的汇编程序列表，但是里面有高级的ARM处理器相关的宏，对我们来讲更希望看到的是IDA反汇编之后的结果。
+armcc编译器可以生成intel语法的汇编程序列表，但是里面有高级的ARM处理器相关的宏，对我们来讲更希望看到“指令原来的样子”，所以让我们看看IDA反汇编之后的结果。
 
-Listing 2.9: Non-optimizing Keil + ARM mode + IDA
+代码清单 3.11: 无优化的 Keil 6/2013 (ARM 模式) IDA
 
 ```
 #!bash
