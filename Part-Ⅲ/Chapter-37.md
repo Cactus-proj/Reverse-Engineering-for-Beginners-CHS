@@ -1,16 +1,19 @@
-
 # 第三十七章
+
 # CRC32哈希散列计算例子
 
 这是非常流行的CRC32哈希散列计算。
 
 ```
 /* By Bob Jenkins, (c) 2006, Public Domain */
+
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
+
 typedef unsigned long ub4;
 typedef unsigned char ub1;
+
 static const ub4 crctab[256] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
     0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
@@ -56,6 +59,7 @@ static const ub4 crctab[256] = {
     0x54de5729, 0x23d967bf, 0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94,
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d,
 };
+
 /* how to derive the values in crctab[] from polynomial 0xedb88320 */
 void build_table()
 {
@@ -74,6 +78,8 @@ void build_table()
         if (i%6 == 5) printf("");
      }
 }
+
+
 /* the hash function */
 ub4 crc(const void *key, ub4 len, ub4 hash)
 {
@@ -93,15 +99,17 @@ int main()
 }
 ```
 
-我们只关心crc()函数。注意for()语句两个循环初始化：hash=len,i=0。标准C/C++允许这样做。循环体内通常需要使用两个初始化部分。 让我们用MSVC优化（/Ox）。为了简洁，仅列出crc()函数的代码，包括我做的注释。
+我们只关心`crc()`函数。注意**for()**语句两个循环初始化条件：`hash=len, i=0`。C/C++标准允许这样做。循环体内通常需要使用两个初始化部分。 
+
+让我们用带优化的 MSVC 编译它（/Ox）。为了简洁，仅列出`crc()`函数的代码，包括我做的注释。
 
 ```
-key$ = 8               ; size = 4
-_len$ = 12              ; size = 4
-_hash$ = 16             ; size = 4
-_crc PROC
+key$ = 8              		; size = 4
+_len$ = 12              	; size = 4
+_hash$ = 16             	; size = 4
+_crc 	PROC
     mov     edx, DWORD PTR _len$[esp-4]
-    xor     ecx, ecx    ; i will be stored in ECX
+    xor     ecx, ecx    	; i will be stored in ECX
     mov     eax, edx
     test    edx, edx
     jbe     SHORT $LN1@crc
@@ -114,8 +122,9 @@ $LL3@crc:
 ; work with bytes using only 32-bit registers. byte from address key+i we store into EDI
  
     movzx   edi, BYTE PTR [ecx+esi]
-    mov     ebx, eax ; EBX = (hash = len)
-    and     ebx, 255 ; EBX = hash & 0xff
+    mov     ebx, eax 		; EBX = (hash = len)
+    and     ebx, 255 		; EBX = hash & 0xff
+
 ; XOR EDI, EBX (EDI=EDI^EBX) - this operation uses all 32 bits of each register
 ; but other bits (8-31) are cleared all time, so it’s OK
 ; these are cleared because, as for EDI, it was done by MOVZX instruction above
@@ -124,57 +133,61 @@ $LL3@crc:
     xor     edi, ebx
  
 ; EAX=EAX>>8; bits 24-31 taken "from nowhere" will be cleared
- 
-        shr     eax, 8
+	shr     eax, 8
  
 ; EAX=EAX^crctab[EDI*4] - choose EDI-th element from crctab[] table
     xor     eax, DWORD PTR _crctab[edi*4]
-    inc     ecx         ; i++
-    cmp     ecx, edx ; i<len ?
-    jb      SHORT $LL3@crc ; yes
+    inc     ecx         	; i++
+    cmp     ecx, edx 		; i<len ?
+    jb      SHORT $LL3@crc 	; yes
     pop     edi
     pop     esi
     pop     ebx
 $LN1@crc:
     ret 0
-_crc ENDP
+_crc 	ENDP
 ```
 
-我们来看GCC 4.4.1优化后的代码：
+我们来看GCC 4.4.1 带`-O3`选项编译后的代码：
 
 ```
-    public crc
-crc     proc near
-key     = dword ptr 8
-hash    = dword ptr 0Ch
-push    ebp
-xor     edx, edx
-mov     ebp, esp
-push    esi
-mov     esi, [ebp+key]
-push    ebx
-mov     ebx, [ebp+hash]
-test    ebx, ebx
-mov     eax, ebx
-jz      short loc_80484D3
-nop                 ; padding
-lea     esi, [esi+0]        ; padding; ESI doesn’t changing here
+    		public crc
+crc     	proc near
+
+key     	= dword ptr  8
+hash    	= dword ptr  0Ch
+			push    ebp
+			xor     edx, edx
+			mov     ebp, esp
+			push    esi
+			mov     esi, [ebp+key]
+			push    ebx
+			mov     ebx, [ebp+hash]
+			test    ebx, ebx
+			mov     eax, ebx
+			jz      short loc_80484D3
+			nop                 	; padding
+			lea     esi, [esi+0]    ; padding; ESI doesn’t changing here
+
 loc_80484B8:
-mov     ecx, eax        ; save previous state of hash to ECX
-xor     al, [esi+edx]       ; AL=*(key+i)
-add     edx, 1          ; i++
-shr     ecx, 8          ; ECX=hash>>8
-movzx   eax, al         ; EAX=*(key+i)
-mov     eax, dword ptr ds:crctab[eax*4]     ; EAX=crctab[EAX]
-xor     eax, ecx        ; hash=EAX^ECX
-cmp     ebx, edx
-ja      short loc_80484B8
+			mov     ecx, eax        ; save previous state of hash to ECX
+			xor     al, [esi+edx]   ; AL=*(key+i)
+			add     edx, 1          ; i++
+			shr     ecx, 8          ; ECX=hash>>8
+			movzx   eax, al         ; EAX=*(key+i)
+			mov     eax, dword ptr ds:crctab[eax*4]	; EAX=crctab[EAX]
+			xor     eax, ecx        ; hash=EAX^ECX
+			cmp     ebx, edx
+			ja      short loc_80484B8
+
 loc_80484D3:
-    pop ebx
-    pop esi
-    pop ebp
-    retn
-crc endp
+    		pop ebx
+    		pop esi
+    		pop ebp
+    		retn
+crc 		endp
+\
 ```
 
-GCC在循环开始的时候通过填入NOP和lea esi,esi+0来按8字节对齐。更多信息请阅读npad小结（64）。
+GCC在循环开始的时候通过填入`NOP`和`lea esi, [esi+0]`(这也是个空指令)来按8字节对齐。
+更多信息请阅读npad小节（C88）。

@@ -1,14 +1,15 @@
 # 第六章
-# printf() 与参数处理
+# printf() 和它的参数
 
-现在让我们扩展"hello, world"(2)中的示例，将其中main()函数中printf的部分替换成这样
+现在，让我们扩展一下先前的例子： *hello, world!*(Chapter 3)，将其中**main()**函数中**printf()**的部分替换成这样：
 
 ```
 #include <stdio.h>
+
 int main()
 {
-    printf("a=%d; b=%d; c=%d", 1, 2, 3);
-    return 0;
+    	printf("a=%d; b=%d; c=%d", 1, 2, 3);
+    	return 0;
 };
 ```
 
@@ -16,19 +17,21 @@ int main()
 
 ### 6.1.1 x86: 3个参数
 
-### MSVC
+#### MSVC
 
 在我们用MSVC 2010 Express编译后可以看到：
 
 ```
-$SG3830 DB ’a=%d; b=%d; c=%d’, 00H
+$SG3830 DB		’a=%d; b=%d; c=%d’, 00H
+
 ...
-        push 3
-        push 2
-        push 1
-        push OFFSET $SG3830
-        call _printf
-        add esp, 16        ; 00000010H
+
+        push 	3
+        push 	2
+        push 	1
+        push 	OFFSET $SG3830
+        call	_printf
+        add 	esp, 16        			; 00000010H
 ```
 
 这和之前的代码几乎一样，但是我们现在可以看到printf()的参数被反序压入了栈中。第一个参数被最后压入。

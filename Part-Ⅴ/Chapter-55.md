@@ -21,7 +21,12 @@ IDA反汇编工具允许我们搜索文本字符串，字节序列和常量。�
 然后惊奇的发现，MaxDB和SAP 6.0 使用同样的代码来处理压缩和解压网络包。
 
 
+
+
+
+
 # 第55章
+
 # 识别可执行文件
 
 ## 55.1 Microsoft Visual C++ 
@@ -31,44 +36,45 @@ IDA反汇编工具允许我们搜索文本字符串，字节序列和常量。�
 ![](img/C55-1.png)
 
 
-msvcp*.dll包含C++相关函数，因此如果导入了这类dll，便可推测是C++程序。
+`msvcp*.dll`包含C++相关的函数，因此如果导入了这类dll，便可推测是C++程序。
 
 
-### 55.1.1命名管理
+### 55.1.1 命名修饰
 
-命名通常以问号?开始。
+变量名通常以问号`?`开始。
 
-获取更多关于MSVC命令管理的信息：51.1.1节
+获取更多关于MSVC命令修饰的信息：51.1.1节
 
 ## 55.2 GCC
 
-除了*NIX环境，Win32下也有GCC，需要Cygwin和MinGW。
+除了***NIX**环境，Win32下也有**GCC**，以`Cygwin`和`MinGW`的形式存在。
 
-### 55.2.1 命名管理
+### 55.2.1 命名修饰
 
-命名通常以_Z符号开头。
+变量名通常以`_Z`符号开头。
 
-更多关于GCC命名管理的信息：51.1.1节
+更多关于GCC命名修饰的信息：51.1.1节
 
 ### 55.2.2 Cygwin
 
-cygwin1.dll经常被导入。
+`cygwin1.dll`经常被导入。
 
 ### 55.2.3 MinGW
 
-msvcrt.dll可能会被导入。
+`msvcrt.dll`可能会被导入。
 
 ## 55.3 Intel FORTRAN
 
-libifcoremd.dll,libifportmd.dll和libiomp5md.dll(OpenMP支持)可能会被导入。
+`libifcoremd.dll`,`libifportmd.dll`和`libiomp5md.dll`(OpenMP支持)可能会被导入。
 
-libifcoremd.dll中许多函数以前缀名for_开始，表示FORTRAN。
+libifcoremd.dll中许多函数以前缀名**for_**开始，表示**FORTRAN**。
 
 
 ## 55.4Watcom,OpenWatcom
+
 ### 55.4.1 命名管理
 
-命名通常以W符号开始。
+命名通常以符号`W`开始。
 
 举个例子，下面是"class"类名为"method"的方法没有任何参数并且返回void的加密：
 
@@ -77,6 +83,7 @@ W?method$_class$n__v
 ```								
 
 ## 55.5 Borland 
+
 这里有一个有关Borland Delphi和C++开发者命名管理的例子：
 
 ```
@@ -93,21 +100,21 @@ W?method$_class$n__v
 @TrueBitmap@$bctr$qiilll
 ```
 
-命名通常以@符号开始，然后是类名、方法名、加密方法的参数类型。
+命名通常以符号`@`开始，然后是类名、方法名、加密方法的参数类型。
 
-这些名称会被导入到.exe，.dll和debug信息内等等。
+这些名称会出现在`.exe`的导入列表，`.dll`的导出列表和debug信息内等地方。
 
-Borland Visual Component Libarary(VCL)存储在.bpl文件中，而不是.dll。比如vcl50.dll,rtl60.dll。
+Borland Visual Component Libarary(VCL)存储在`.bpl`，而不是`.dll`文件中。比如`vcl50.dll`,`rtl60.dll`。
 
-其他可能导入的DLL：BORLNDMM.DLL。
+其他可能导入的DLL：`BORLNDMM.DLL`。
 
 
 ### 55.5.1 Delphi
 
 
-几乎所有的Delphi可执行文件的代码段都以"Boolean"字符串开始，和其他类型名称一起。
-下面是一个典型的Delphi程序的代码段开头，这个块紧接着win32 PE文件头：
+几乎所有的Delphi可执行文件，在代码段的开头都有"Boolean"字符串，和其他类型名称连在一起。
 
+下面是一个典型的Delphi程序的**代码段**开头，这个块紧接着win32 PE文件头：
 
 ```
 00000400  04 10 40 00 03 07 42 6f  6f 6c 65 61 6e 01 00 00  |..@...Boolean...|
@@ -124,7 +131,6 @@ Borland Visual Component Libarary(VCL)存储在.bpl文件中，而不是.dll。�
 000004b0  01 08 43 61 72 64 69 6e  61 6c 05 00 00 00 00 ff  |..Cardinal......|
 000004c0  ff ff ff 90 c8 10 40 00  10 05 49 6e 74 36 34 00  |......@...Int64.|
 000004d0  00 00 00 00 00 00 80 ff  ff ff ff ff ff ff 7f 90  |................|
-
 000004e0  e4 10 40 00 04 08 45 78  74 65 6e 64 65 64 02 90  |..@...Extended..|
 000004f0  f4 10 40 00 04 06 44 6f  75 62 6c 65 01 8d 40 00  |..@...Double..@.|
 00000500  04 11 40 00 04 08 43 75  72 72 65 6e 63 79 04 90  |..@...Currency..|
@@ -165,11 +171,11 @@ Borland Visual Component Libarary(VCL)存储在.bpl文件中，而不是.dll。�
 00000730  69 6d 65 01 ff 25 48 e0  c4 00 8b c0 ff 25 44 e0  |ime..%H......%D.|
 ```
 
-数据段(DATA)最开始的四字节可能是00 00 00 00，32 13 8B C0或者FF FF FF FF。在处理加壳/加密的 Delphi可执行文件时这个信息很有用。
+数据段(**DATA**)最开始的四字节可能是`00 00 00 00`，`32 13 8B C0`或者`FF FF FF FF`。在处理加壳/加密的 Delphi可执行文件时这个信息很有用。
 
 
-## 55.6其他有名的DLLs
+## 55.6 其他有名的 DLL
 
-*	vcomp*.dll Microsoft实现的OpenMP
+*	`vcomp*.dll` Microsoft实现的OpenMP
 
 
