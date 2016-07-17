@@ -28,24 +28,24 @@ JVM字节码知识什么时候有用呢？
 可能最简单的java函数就是返回一些值，oh，并且我们必须注意，一边情况下，在java中没有孤立存在的函数，他们是“方法”(method)，每个方法都是被关联到某些类，所以方法不会被定义在类外面， 但是我还是叫他们“函数”
 (function),我这么用。
 
-
-    public class ret
-    {
-    public static int main(String[] args)
-    {
-    return 0;
-    }
-    }
-    
+```
+public class ret
+{
+        public static int main(String[] args)
+        {
+                return 0;
+        }
+}
+```    
 
 编译它。
-    
+
     javac ret.java
 
 。。。使用Java标准工具反编译。
 
     javap -c -verbose ret.class
-    
+
 会得到结果：
 
     public static int main(java.lang.String[]);
@@ -84,7 +84,7 @@ JVM字节码知识什么时候有用呢？
     stack=1, locals=1, args_size=1
     0: sipush 1234
     3: ireturn
-    
+
 sipush(shot integer)如栈值是1234,slot的名字以为着一个16bytes值将会入栈。
 sipush(短整型)
 1234数值确认时候16-bit值。
@@ -96,7 +96,7 @@ sipush(短整型)
     return 12345678;
     }
     }
-    
+
 更大的值是什么？
 
 清单 54.3 常量区
@@ -152,7 +152,7 @@ MIPS码也有一个传统的常量区，literal pool(原语区)
 
     public class ret
     {
-    
+
     public static short main(String[] args)
     {
     return 1234;
@@ -195,7 +195,7 @@ bipush 的意思"push byte"字节入栈，不必说java的char是16位UTF16字�
     }
     public static byte main(java.lang.String[]);
     flags: ACC_PUBLIC, ACC_STATIC
-    
+
     Code:
     stack=1, locals=1, args_size=1
     0: bipush 123
@@ -240,7 +240,7 @@ bipush 的意思"push byte"字节入栈，不必说java的char是16位UTF16字�
     return 123.456d;
     }
     }
-    
+
 清单54.5常量区
 
     ...
@@ -286,7 +286,7 @@ dreturn 代表 "return double"
 
 那么函数还能返回什么呢？
 
-    
+
     public class ret
     {
     public static void main(String[] args)
@@ -352,7 +352,7 @@ ireturn取得比返回。
     return a/2.0;
     }
     }
-    
+
 
 清单54.7 常量区
 
@@ -372,7 +372,7 @@ ireturn取得比返回。
 类似，只是ldc2_w指令是从常量区装载2.0，另外，所有其他三条指令有d前缀，意思是他们工作在double数据类型下。
 
 我们现在使用两个参数的函数。
-    
+
     public class calc
     {
     public static int sum(int a, int b)
@@ -484,7 +484,7 @@ mathrandom()返回一个伪随机数，函数范围在「0.0...1.0)之间，但�
     return Math.random()/2;
     }
     }
-    
+
 
 
 54.8 常量区
@@ -493,7 +493,7 @@ mathrandom()返回一个伪随机数，函数范围在「0.0...1.0)之间，但�
     #2 = Methodref #18.#19 // java/lang/Math.⤦
     Ç random:()D
     6(Java) Local Variable Array
-    
+
     #3 = Double 2.0d
     ...
     #12 = Utf8 ()D
@@ -611,7 +611,7 @@ java本地变量数组
     }
     public static int RNG_a=1664525;
     public static int RNG_c=1013904223;
-    
+
     public int my_rand ()
     {
     rand_state=rand_state*RNG_a;
@@ -805,7 +805,7 @@ if_icmple出栈两个值并比较他们，如果第三个子值比第一个值�
     51: invokevirtual #4 // Method java/io⤦
     Ç /PrintStream.print:(Ljava/lang/String;)V
     54: return
-    
+
 
 if_icmpge出栈两个值，并且比较它们，如果第的二个值大于第一个，发生跳转到行偏移14，if_icmpne和if_icmple做的工作类似，但是使用不同的判断条件。
 
@@ -953,14 +953,14 @@ iconst_m1将-1入栈，这数其实就是16进制的0xFFFFFFFF，将0xFFFFFFFF�
     6: i2l
     7: land
     8: lreturn
-    
+
 代码是相同的，但是指令前面使用了前缀L，操作64位值，并且第二个函数参数还是int类型，并且32值需要升级为64位值，值被i21指令使用，本质上
 就是把整型，扩展成64位长整型.
 
 
 ## 54.11循环
 
-    
+
     public class Loop
     {
     public static void main(String[] args)
@@ -1140,13 +1140,13 @@ default: System.out.println("something unknown\⤦
     96: invokevirtual #4 // Method java/io⤦
     Ç /PrintStream.println:(Ljava/lang/String;)V
     99: return
-    
+
 
 ## 54.13数组
 ### 54.13.1简单的例子
 我们首先创建一个长度是10的整型的数组，对其初始化。
 
-    
+
     public static void main(String[] args)
     {
     int a[]=new int[10];
@@ -1309,7 +1309,7 @@ iconst_1和aload在行偏移12,13，取得数组第一个元素的引用（从0�
 
     class Month
     {
-    
+
     public static String[] months =
     {
     "January",
@@ -1410,7 +1410,7 @@ aaload操作数组引用，java字符串是一个对象，所以a_instructiong�
     71: putstatic #2 // Field months:[⤦
     Ç Ljava/lang/String;
     74: return
-    
+
 
 anewarray  创建一个新数组的引用（a是一个前缀）对象的类型被定义在anewarray操作数中，它在这是“java/lang/string”文本字符串，在这之前的bipush 1L是设置数组的大小。
 对于我们再这看到一个新指令dup，他是一个众所周知的堆栈操作的计算机指令。用于复制栈顶的值。（包括了之后的编程语言）它在这是用于复制数组的引用。因为aastore张玲玲
@@ -1534,7 +1534,7 @@ format()方法是做什么的？它用两个参数作为输入，字符串和数
     Ç ;)Ljava/io/PrintStream;
     33: pop
     34: return
-    
+
 
 所以int和double类型是被首先普生为integer和double 对象，被用于方法的值。。。format()方法需要，对象雷翔的对象作为输入，因为integer和double类是继承于根类root。他们适合作为数组输入的元素，
 另一方面，数组总是同质的，例如，同一个数组不能含有两种不同的数据类型。不能同时都把integer和double类型的数据同时放入的数组。
@@ -1758,7 +1758,7 @@ double对象被添加到数组在29行。
     18: areturn
 
 另外一个例子
-    
+
     public static void main(String[] args)
     {
     String s="Hello!";
@@ -1768,7 +1768,7 @@ double对象被添加到数组在29行。
 
 字符串构造用StringBuilder类，和它的添加方法，被构造的字符串被传递给println方法。
 
-    
+
     public static void main(java.lang.String[]);
     flags: ACC_PUBLIC, ACC_STATIC
     Code:
@@ -1810,7 +1810,7 @@ double对象被添加到数组在29行。
 让我们稍微修改一下，月处理的那个例子(在932页的54.13.4)
 
 清单 54.10: IncorrectMonthException.java
-    
+
     public class IncorrectMonthException extends Exception
     {
     private int index;
@@ -1865,7 +1865,7 @@ double对象被添加到数组在29行。
     }
     };
     }
-    
+
 
 本质上，IncorrectMonthExceptinClass类只是做了对象构造，还有访问器方法。
 IncorrectMonthExceptinClass是继承于Exception类，所以，IncorrectMonth类构造之前，构造父类Exception，然后传递整数给IncorrectMonthException类作为唯一的属性值。
@@ -1896,7 +1896,7 @@ getIndex()只是一个访问器，引用到IncorrectMothnException类，被传�
 现在来看下month.class的get_month方法。
 
 清单 54.12: Month2.class
-    
+
     public static java.lang.String get_month(int) throws ⤦
     Ç IncorrectMonthException;
     flags: ACC_PUBLIC, ACC_STATIC
@@ -1987,10 +1987,10 @@ println()和printStackTrace(1)会被调用，PrintStackTrace(1)调用
 
 这有个例子，IDA是如何显示异常范围：
 
-清单54.14 
+清单54.14
 我从我的计算机中找到 random.class 这个文件
 
-    
+
     .catch java/io/FileNotFoundException from met001_335 to ⤦
     Ç met001_360\
     using met001_360
@@ -2023,7 +2023,7 @@ println()和printStackTrace(1)会被调用，PrintStackTrace(1)调用
 简单类
 
 清单 54.15: test.java
-    
+
     public class test
     {
     public static int a;
@@ -2277,7 +2277,7 @@ Figure 54.2 : IDA
     CHAPTER 54. JAVA 54.18. SUMMARY
     at sun.launcher.LauncherHelper.checkAndLoadMain(⤦
     Ç LauncherHelper.java:486)
-    
+
 不用说了，它工作在JRE1.6
 我也尝试把所有的3 ifeq的所有操作码都用0替换（NOP），它仍然会工作，好，可能没有更多的堆栈映射在JRE1.7中被检查出来。
 
