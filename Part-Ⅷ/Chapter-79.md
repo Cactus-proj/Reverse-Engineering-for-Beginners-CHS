@@ -1142,3 +1142,678 @@ Indeed, when we run the encryption utility and try non-Latin characters in the p
 .text:005411E5                 jle     short skip_subtracting
 .text:005411E7                 sub     ecx, 24
 ```
+
+```
+.text:005411EA
+.text:005411EA skip_subtracting:                       ; CODE XREF: rotate_all_with_password+35
+```
+
+```
+.text:005411EA                 mov     eax, 55555556h
+.text:005411EF                 imul    ecx
+.text:005411F1                 mov     eax, edx
+.text:005411F3                 shr     eax, 1Fh
+.text:005411F6                 add     edx, eax
+.text:005411F8                 mov     eax, ecx
+.text:005411FA                 mov     esi, edx
+.text:005411FC                 mov     ecx, 3
+.text:00541201                 cdq
+.text:00541202                 idiv    ecx
+```
+
+```
+.text:00541204 sub     edx, 0
+.text:00541207 jz      short call_rotate1 ; _EN(``if remainder is zero, go to rotate1'')_RU(``если остаток 0, перейти к rotate1'')
+.text:00541209 dec     edx
+.text:0054120A jz      short call_rotate2 ; .. _EN(``if it is 1, go to rotate2'')_RU(``если он 1, перейти к rotate2'')
+.text:0054120C dec     edx
+.text:0054120D jnz     short next_character_in_password
+.text:0054120F test    ebx, ebx
+.text:00541211 jle     short next_character_in_password
+.text:00541213 mov     edi, ebx
+```
+
+```
+.text:00541215 call_rotate3:
+.text:00541215                 push    esi
+.text:00541216                 call    rotate3
+.text:0054121B                 add     esp, 4
+.text:0054121E                 dec     edi
+.text:0054121F                 jnz     short call_rotate3
+.text:00541221                 jmp     short next_character_in_password
+.text:00541223
+.text:00541223 call_rotate2:
+.text:00541223                 test    ebx, ebx
+.text:00541225                 jle     short next_character_in_password
+.text:00541227                 mov     edi, ebx
+.text:00541229
+.text:00541229 loc_541229:
+.text:00541229                 push    esi
+.text:0054122A                 call    rotate2
+.text:0054122F                 add     esp, 4
+.text:00541232                 dec     edi
+.text:00541233                 jnz     short loc_541229
+.text:00541235                 jmp     short next_character_in_password
+.text:00541237
+.text:00541237 call_rotate1:
+.text:00541237                 test    ebx, ebx
+.text:00541239                 jle     short next_character_in_password
+.text:0054123B                 mov     edi, ebx
+.text:0054123D
+.text:0054123D loc_54123D:
+.text:0054123D                 push    esi
+.text:0054123E                 call    rotate1
+.text:00541243                 add     esp, 4
+.text:00541246                 dec     edi
+.text:00541247                 jnz     short loc_54123D
+.text:00541249
+```
+
+
+```
+.text:00541249 next_character_in_password:
+.text:00541249                 mov     al, [ebp+1]
+```
+
+```
+.text:0054124C                 inc     ebp
+.text:0054124D                 test    al, al
+.text:0054124F                 jnz     loop_begin
+.text:00541255                 pop     edi
+.text:00541256                 pop     esi
+.text:00541257                 pop     ebx
+.text:00541258
+.text:00541258 exit:
+.text:00541258                 pop     ebp
+.text:00541259                 retn
+.text:00541259 rotate_all_with_password endp
+```
+
+```
+void rotate_all (char *pwd, int v)
+{
+	char *p=pwd;
+
+	while (*p)
+	{
+		char c=*p;
+		int q;
+
+		c=tolower (c);
+
+		if (c>='a' && c<='z')
+		{
+			q=c-'a';
+			if (q>24)
+				q-=24;
+
+			int quotient=q/3;
+			int remainder=q % 3;
+
+			switch (remainder)
+			{
+			case 0: for (int i=0; i<v; i++) rotate1 (quotient); break;
+			case 1: for (int i=0; i<v; i++) rotate2 (quotient); break;
+			case 2: for (int i=0; i<v; i++) rotate3 (quotient); break;
+			};
+		};
+
+		p++;
+	};
+};
+```
+
+```
+.text:00541050 get_bit         proc near
+.text:00541050
+.text:00541050 arg_0           = dword ptr  4
+.text:00541050 arg_4           = dword ptr  8
+.text:00541050 arg_8           = byte ptr  0Ch
+.text:00541050
+.text:00541050                 mov     eax, [esp+arg_4]
+.text:00541054                 mov     ecx, [esp+arg_0]
+.text:00541058                 mov     al, cube64[eax+ecx*8]
+.text:0054105F                 mov     cl, [esp+arg_8]
+.text:00541063                 shr     al, cl
+.text:00541065                 and     al, 1
+.text:00541067                 retn
+.text:00541067 get_bit         endp
+```
+
+```
+.text:00541000 set_bit         proc near
+.text:00541000
+.text:00541000 arg_0           = dword ptr  4
+.text:00541000 arg_4           = dword ptr  8
+.text:00541000 arg_8           = dword ptr  0Ch
+.text:00541000 arg_C           = byte ptr  10h
+.text:00541000
+.text:00541000                 mov     al, [esp+arg_C]
+.text:00541004                 mov     ecx, [esp+arg_8]
+.text:00541008                 push    esi
+.text:00541009                 mov     esi, [esp+4+arg_0]
+.text:0054100D                 test    al, al
+.text:0054100F                 mov     eax, [esp+4+arg_4]
+.text:00541013                 mov     dl, 1
+.text:00541015                 jz      short loc_54102B
+```
+
+```
+.text:00541017                 shl     dl, cl
+.text:00541019                 mov     cl, cube64[eax+esi*8]
+```
+
+```
+.text:00541020                 or      cl, dl
+```
+
+```
+.text:00541022                 mov     cube64[eax+esi*8], cl
+.text:00541029                 pop     esi
+.text:0054102A                 retn
+.text:0054102B
+.text:0054102B loc_54102B:
+.text:0054102B                 shl     dl, cl
+```
+
+```
+.text:0054102D                 mov     cl, cube64[eax+esi*8]
+```
+
+```
+.text:00541034                 not     dl
+```
+
+```
+.text:00541038                 mov     cube64[eax+esi*8], cl
+.text:0054103F                 pop     esi
+.text:00541040                 retn
+.text:00541040 set_bit         endp
+```
+
+```
+#define IS_SET(flag, bit)       ((flag) & (bit))
+#define SET_BIT(var, bit)       ((var) |= (bit))
+#define REMOVE_BIT(var, bit)    ((var) &= ~(bit))
+
+static BYTE cube[8][8];
+
+void set_bit (int x, int y, int shift, int bit)
+{
+	if (bit)
+		SET_BIT (cube[x][y], 1<<shift);
+	else
+		REMOVE_BIT (cube[x][y], 1<<shift);
+};
+
+bool get_bit (int x, int y, int shift)
+{
+	if ((cube[x][y]>>shift)&1==1)
+		return 1;
+	return 0;
+};
+```
+
+```
+.text:00541070 rotate1         proc near
+.text:00541070
+```
+
+```
+.text:00541070 internal_array_64= byte ptr -40h
+.text:00541070 arg_0           = dword ptr  4
+.text:00541070
+.text:00541070                 sub     esp, 40h
+.text:00541073                 push    ebx
+.text:00541074                 push    ebp
+.text:00541075                 mov     ebp, [esp+48h+arg_0]
+.text:00541079                 push    esi
+.text:0054107A                 push    edi
+.text:0054107B                 xor     edi, edi        ; EDI is loop1 counter
+```
+
+```
+.text:0054107D                 lea     ebx, [esp+50h+internal_array_64]
+.text:00541081
+```
+
+```
+.text:00541081 first_loop1_begin:
+.text:00541081    xor     esi, esi        ; _EN(`ESI is loop 2 counter')_RU(`ESI это счетчик второго цикла')
+.text:00541083
+.text:00541083 first_loop2_begin:
+.text:00541083    push    ebp             ; arg_0
+.text:00541084    push    esi             ; _EN(`loop 1 counter')_RU(`счетчик первого цикла')
+.text:00541085    push    edi             ; _EN(`loop 2 counter')_RU(`счетчик второго цикла')
+.text:00541086    call    get_bit
+.text:0054108B    add     esp, 0Ch
+.text:0054108E    mov     [ebx+esi], al   ; _EN(`store to internal array')_RU(`записываем во внутренний массив')
+.text:00541091    inc     esi             ; _EN(`increment loop 1 counter')_RU(`инкремент счетчика первого цикла')
+.text:00541092    cmp     esi, 8
+.text:00541095    jl      short first_loop2_begin
+.text:00541097    inc     edi             ; _EN(`increment loop 2 counter')_RU(`инкремент счетчика второго цикла')
+
+; _EN(`increment internal array pointer by 8 at each loop 1 iteration')_RU(`инкремент указателя во внутреннем массиве на 8 на каждой итерации первого цикла')
+.text:00541098    add     ebx, 8
+.text:0054109B    cmp     edi, 8
+.text:0054109E    jl      short first_loop1_begin
+```
+
+```
+.text:005410A0    lea     ebx, [esp+50h+internal_array_64]
+.text:005410A4    mov     edi, 7          ; _EN(``EDI is loop 1 counter, initial state is 7'')_RU(``EDI здесь счетчик первого цикла, значение на старте - 7'')
+.text:005410A9
+.text:005410A9 second_loop1_begin:
+.text:005410A9    xor     esi, esi        ; _EN(`ESI is loop 2 counter')_RU(`ESI - счетчик второго цикла')
+.text:005410AB
+.text:005410AB second_loop2_begin:
+.text:005410AB    mov     al, [ebx+esi]   ; EN(`value from internal array')_RU(`значение из внутреннего массива')
+.text:005410AE    push    eax
+.text:005410AF    push    ebp             ; arg_0
+.text:005410B0    push    edi             ; _EN(`loop 1 counter')_RU(`счетчик первого цикла')
+.text:005410B1    push    esi             ; _EN(`loop 2 counter')_RU(`счетчик второго цикла')
+.text:005410B2    call    set_bit
+.text:005410B7    add     esp, 10h
+.text:005410BA    inc     esi             ; _EN(`increment loop 2 counter')_RU(`инкремент счетчика второго цикла')
+.text:005410BB    cmp     esi, 8
+.text:005410BE    jl      short second_loop2_begin
+.text:005410C0    dec     edi             ; _EN(`decrement loop 2 counter')_RU(`декремент счетчика первого цикла')
+.text:005410C1    add     ebx, 8          ; _EN(`increment pointer in internal array')_RU(`инкремент указателя во внутреннем массиве')
+.text:005410C4    cmp     edi, 0FFFFFFFFh
+.text:005410C7    jg      short second_loop1_begin
+.text:005410C9    pop     edi
+.text:005410CA    pop     esi
+.text:005410CB    pop     ebp
+.text:005410CC    pop     ebx
+.text:005410CD    add     esp, 40h
+.text:005410D0    retn
+.text:005410D0 rotate1         endp
+```
+
+
+```
+void rotate1 (int v)
+{
+	bool tmp[8][8]; // internal array
+	int i, j;
+
+	for (i=0; i<8; i++)
+		for (j=0; j<8; j++)
+			tmp[i][j]=get_bit (i, j, v);
+
+	for (i=0; i<8; i++)
+		for (j=0; j<8; j++)
+			set_bit (j, 7-i, v, tmp[x][y]);
+};
+```
+
+```
+.text:005410E0 rotate2 proc near
+.text:005410E0
+.text:005410E0 internal_array_64 = byte ptr -40h
+.text:005410E0 arg_0 = dword ptr  4
+.text:005410E0
+.text:005410E0     sub     esp, 40h
+.text:005410E3     push    ebx
+.text:005410E4     push    ebp
+.text:005410E5     mov     ebp, [esp+48h+arg_0]
+.text:005410E9     push    esi
+.text:005410EA     push    edi
+.text:005410EB     xor     edi, edi        ; _EN(`loop 1 counter')_RU(`счетчик первого цикла')
+.text:005410ED     lea     ebx, [esp+50h+internal_array_64]
+.text:005410F1
+.text:005410F1 loc_5410F1:
+.text:005410F1     xor     esi, esi        ; _EN(`loop 2 counter')_RU(`счетчик второго цикла')
+.text:005410F3
+.text:005410F3 loc_5410F3:
+.text:005410F3     push    esi             ; _EN(`loop 2 counter')_RU(`счетчик второго цикла')
+.text:005410F4     push    edi             ; _EN(`loop 1 counter')_RU(`счетчик первого цикла')
+.text:005410F5     push    ebp             ; arg_0
+.text:005410F6     call    get_bit
+.text:005410FB     add     esp, 0Ch
+.text:005410FE     mov     [ebx+esi], al   ; _EN(`store to internal array')_RU(`записать во внутренний массив')
+.text:00541101     inc     esi             ; _EN(`increment loop 1 counter')_RU(`инкремент счетчика первого цикла')
+.text:00541102     cmp     esi, 8
+.text:00541105     jl      short loc_5410F3
+.text:00541107     inc     edi             ; _EN(`increment loop 2 counter')_RU(`инкремент счетчика второго цикла')
+.text:00541108     add     ebx, 8
+.text:0054110B     cmp     edi, 8
+.text:0054110E     jl      short loc_5410F1
+.text:00541110     lea     ebx, [esp+50h+internal_array_64]
+.text:00541114     mov     edi, 7          ; _EN(`loop 1 counter is initial state 7')_RU(`первоначальное значение счетчика первого цикла - 7')
+.text:00541119
+.text:00541119 loc_541119:
+.text:00541119     xor     esi, esi        ; _EN(`loop 2 counter')_RU(`счетчик второго цикла')
+.text:0054111B
+.text:0054111B loc_54111B:
+.text:0054111B     mov     al, [ebx+esi]   ; _EN(`get byte from internal array')_RU(`взять байт из внутреннего массива')
+.text:0054111E     push    eax
+.text:0054111F     push    edi             ; _EN(`loop 1 counter')_RU(`счетчик первого цикла')
+.text:00541120     push    esi             ; _EN(`loop 2 counter')_RU(`счетчик второго цикла')
+.text:00541121     push    ebp             ; arg_0
+.text:00541122     call    set_bit
+.text:00541127     add     esp, 10h
+.text:0054112A     inc     esi             ; _EN(`increment loop 2 counter')_RU(`')
+.text:0054112B     cmp     esi, 8
+.text:0054112E     jl      short loc_54111B
+.text:00541130     dec     edi             ; _EN(`decrement loop 2 counter')_RU(`')
+.text:00541131     add     ebx, 8
+.text:00541134     cmp     edi, 0FFFFFFFFh
+.text:00541137     jg      short loc_541119
+.text:00541139     pop     edi
+.text:0054113A     pop     esi
+.text:0054113B     pop     ebp
+.text:0054113C     pop     ebx
+.text:0054113D     add     esp, 40h
+.text:00541140     retn
+.text:00541140 rotate2 endp
+```
+
+```
+void rotate2 (int v)
+{
+	bool tmp[8][8]; // internal array
+	int i, j;
+
+	for (i=0; i<8; i++)
+		for (j=0; j<8; j++)
+			tmp[i][j]=get_bit (v, i, j);
+
+	for (i=0; i<8; i++)
+		for (j=0; j<8; j++)
+			set_bit (v, j, 7-i, tmp[i][j]);
+};
+```
+
+```
+void rotate3 (int v)
+{
+	bool tmp[8][8];
+	int i, j;
+
+	for (i=0; i<8; i++)
+		for (j=0; j<8; j++)
+			tmp[i][j]=get_bit (i, v, j);
+
+	for (i=0; i<8; i++)
+		for (j=0; j<8; j++)
+			set_bit (7-j, v, i, tmp[i][j]);
+};
+```
+
+```
+void decrypt (BYTE *buf, int sz, char *pw)
+{
+	char *p=strdup (pw);
+	strrev (p);
+	int i=0;
+
+	do
+	{
+		memcpy (cube, buf+i, 8*8);
+		rotate_all (p, 3);
+		memcpy (buf+i, cube, 8*8);
+		i+=64;
+	}
+	while (i<sz);
+
+	free (p);
+};
+```
+
+
+```
+q=c-'a';
+if (q>24)
+	q-=24;
+
+int quotient=q/3; // in range 0..7
+int remainder=q % 3;
+
+switch (remainder)
+{
+    case 0: for (int i=0; i<v; i++) rotate1 (quotient); break; // front
+    case 1: for (int i=0; i<v; i++) rotate2 (quotient); break; // top
+    case 2: for (int i=0; i<v; i++) rotate3 (quotient); break; // left
+};
+```
+
+```
+#include <windows.h>
+
+#include <stdio.h>
+#include <assert.h>
+
+#define IS_SET(flag, bit)       ((flag) & (bit))
+#define SET_BIT(var, bit)       ((var) |= (bit))
+#define REMOVE_BIT(var, bit)    ((var) &= ~(bit))
+
+static BYTE cube[8][8];
+
+void set_bit (int x, int y, int z, bool bit)
+{
+	if (bit)
+		SET_BIT (cube[x][y], 1<<z);
+	else
+		REMOVE_BIT (cube[x][y], 1<<z);
+};
+
+bool get_bit (int x, int y, int z)
+{
+	if ((cube[x][y]>>z)&1==1)
+		return true;
+	return false;
+};
+
+void rotate_f (int row)
+{
+	bool tmp[8][8];
+	int x, y;
+
+	for (x=0; x<8; x++)
+		for (y=0; y<8; y++)
+			tmp[x][y]=get_bit (x, y, row);
+
+	for (x=0; x<8; x++)
+		for (y=0; y<8; y++)
+			set_bit (y, 7-x, row, tmp[x][y]);
+};
+
+void rotate_t (int row)
+{
+	bool tmp[8][8];
+	int y, z;
+
+	for (y=0; y<8; y++)
+		for (z=0; z<8; z++)
+			tmp[y][z]=get_bit (row, y, z);
+
+	for (y=0; y<8; y++)
+		for (z=0; z<8; z++)
+			set_bit (row, z, 7-y, tmp[y][z]);
+};
+
+void rotate_l (int row)
+{
+	bool tmp[8][8];
+	int x, z;
+
+	for (x=0; x<8; x++)
+		for (z=0; z<8; z++)
+			tmp[x][z]=get_bit (x, row, z);
+
+	for (x=0; x<8; x++)
+		for (z=0; z<8; z++)
+			set_bit (7-z, row, x, tmp[x][z]);
+};
+
+void rotate_all (char *pwd, int v)
+{
+	char *p=pwd;
+
+	while (*p)
+	{
+		char c=*p;
+		int q;
+
+		c=tolower (c);
+
+		if (c>='a' && c<='z')
+		{
+			q=c-'a';
+			if (q>24)
+				q-=24;
+
+			int quotient=q/3;
+			int remainder=q % 3;
+
+			switch (remainder)
+			{
+			case 0: for (int i=0; i<v; i++) rotate_f (quotient); break;
+			case 1: for (int i=0; i<v; i++) rotate_t (quotient); break;
+			case 2: for (int i=0; i<v; i++) rotate_l (quotient); break;
+			};
+		};
+
+		p++;
+	};
+};
+
+void crypt (BYTE *buf, int sz, char *pw)
+{
+	int i=0;
+
+	do
+	{
+		memcpy (cube, buf+i, 8*8);
+		rotate_all (pw, 1);
+		memcpy (buf+i, cube, 8*8);
+		i+=64;
+	}
+	while (i<sz);
+};
+
+void decrypt (BYTE *buf, int sz, char *pw)
+{
+	char *p=strdup (pw);
+	strrev (p);
+	int i=0;
+
+	do
+	{
+		memcpy (cube, buf+i, 8*8);
+		rotate_all (p, 3);
+		memcpy (buf+i, cube, 8*8);
+		i+=64;
+	}
+	while (i<sz);
+
+	free (p);
+};
+
+void crypt_file(char *fin, char* fout, char *pw)
+{
+	FILE *f;
+	int flen, flen_aligned;
+	BYTE *buf;
+
+	f=fopen(fin, "rb");
+
+	if (f==NULL)
+	{
+		printf ("Cannot open input file!\n");
+		return;
+	};
+
+	fseek (f, 0, SEEK_END);
+	flen=ftell (f);
+	fseek (f, 0, SEEK_SET);
+
+	flen_aligned=(flen&0xFFFFFFC0)+0x40;
+
+	buf=(BYTE*)malloc (flen_aligned);
+	memset (buf, 0, flen_aligned);
+
+	fread (buf, flen, 1, f);
+
+	fclose (f);
+
+	crypt (buf, flen_aligned, pw);
+
+	f=fopen(fout, "wb");
+
+	fwrite ("QR9", 3, 1, f);
+	fwrite (&flen, 4, 1, f);
+	fwrite (buf, flen_aligned, 1, f);
+
+	fclose (f);
+
+	free (buf);
+
+};
+
+void decrypt_file(char *fin, char* fout, char *pw)
+{
+	FILE *f;
+	int real_flen, flen;
+	BYTE *buf;
+
+	f=fopen(fin, "rb");
+
+	if (f==NULL)
+	{
+		printf ("Cannot open input file!\n");
+		return;
+	};
+
+	fseek (f, 0, SEEK_END);
+	flen=ftell (f);
+	fseek (f, 0, SEEK_SET);
+
+	buf=(BYTE*)malloc (flen);
+
+	fread (buf, flen, 1, f);
+
+	fclose (f);
+
+	if (memcmp (buf, "QR9", 3)!=0)
+	{
+		printf ("File is not encrypted!\n");
+		return;
+	};
+
+	memcpy (&real_flen, buf+3, 4);
+
+	decrypt (buf+(3+4), flen-(3+4), pw);
+
+	f=fopen(fout, "wb");
+
+	fwrite (buf+(3+4), real_flen, 1, f);
+
+	fclose (f);
+
+	free (buf);
+};
+
+// run: input output 0/1 password
+// 0 for encrypt, 1 for decrypt
+
+int main(int argc, char *argv[])
+{
+	if (argc!=5)
+	{
+		printf ("Incorrect parameters!\n");
+		return 1;
+	};
+
+	if (strcmp (argv[3], "0")==0)
+		crypt_file (argv[1], argv[2], argv[4]);
+	else
+		if (strcmp (argv[3], "1")==0)
+			decrypt_file (argv[1], argv[2], argv[4]);
+		else
+			printf ("Wrong param %s\n", argv[3]);
+
+	return 0;
+};
+```
