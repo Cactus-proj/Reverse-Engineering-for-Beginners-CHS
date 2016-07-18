@@ -2,7 +2,7 @@
 
 # Hello,world!
 
-让我们用《C语言程序设计》中最著名的例子开始吧[Ker88]：
+让我们用《C语言程序设计》中最著名的例子开始吧[[Ker88]](Bibliography.md)：
 
 ```
 #include <stdio.h>
@@ -35,10 +35,10 @@ EXTRN   _printf:PROC
 ; Function compile flags: /Odtp
 _TEXT   SEGMENT
 _main   PROC
-        push     ebp
+        push    ebp
         mov     ebp, esp
-        push     OFFSET $SG3830
-        call     _printf
+        push    OFFSET $SG3830
+        call    _printf
         add     esp, 4
         xor     eax, eax
         pop     ebp
@@ -51,7 +51,7 @@ MSVC生成的汇编代码用的是Intel的汇编语法。Intel语法与AT&T语�
 
 编译器会生成连接到`1.exe`的`1.obj`文件。在我们的例子当中，该文件包含两个部分：`CONST`（放数据常量）和`_TEXT`（放代码）。
 
-字符串`"hello, world"`在C/C++的类型为`const char[]`[Str13, 7.3.2],，然而它没有自己的变量名。编译器需要处理这个字符串，于是就自己给他定义了一个内部名称`$SG3830`。
+字符串`"hello, world"`在C/C++的类型为`const char[]`[[Str13](Bibliography.md), 7.3.2],，然而它没有自己的变量名。编译器需要处理这个字符串，于是就自己给他定义了一个内部名称`$SG3830`。
 
 所以我们的例子可以重写为下面这样：
 
@@ -79,14 +79,14 @@ int main()
 
 为什么是4呢？因为这是32位的程序，通过栈传送地址刚好需要4个字节。如果是64位的代码则需要8字节。`ADD ESP, 4`在效率上等同于`POP register`，但是后者不需要使用任何寄存器。
 
-一些编辑器（如Intel C++编译器）在同样的情况下可能会用`POP ECX`代替ADD（这样的模式可以在Oracle RDBMS代码中看到，因为它是由Intel C++编译器编译的），这两条指令的效果基本相同，但是ECX的寄存器内容会被改写。Intel C++编译器可能用`POP ECX`，因为这条指令比`ADD ESP, X`更短，（`POP`----1字节对应`ADD`----3字节）。
+一些编辑器（如Intel C++编译器）在同样的情况下可能会用`POP ECX`代替`ADD`（这样的模式可以在Oracle RDBMS的代码中看到，因为它也是由Intel C++编译器编译的），这两条指令的效果基本相同，但是ECX的寄存器内容会被改写。Intel C++编译器可能用`POP ECX`，因为这条指令比`ADD ESP, X`更短，（`POP`----1字节对应`ADD`----3字节）。
 
 这里有一个在Oracle RDBMS中用`POP`而不用`ADD`的例子。 清单 3.2: Oracle RDBMS 10.2 Linux (app.o 文件)
 
 ```
 .text:0800029A         push     ebx
 .text:0800029B         call     qksfroChild
-.text:080002A0         pop     ecx
+.text:080002A0         pop      ecx
 ```
 
 在调用printf()之后，原来的C/C++代码执行`return 0`，返回0当做main()函数的返回结果。在生成的代码中，这被编译成指令`XOR EAX, EAX`。
@@ -108,19 +108,19 @@ XOR事实上就是异或，但是编译器经常用它来代替`MOV EAX, 0`原�
 代码清单 3.3:IDA里的代码
 
 ```
-main proc near
-var_10          = dword ptr -10h
-    push ebp
-    mov  ebp, esp
-    and  esp, 0FFFFFFF0h
-    sub  esp, 10h
-    mov  eax, offset aHelloWorld ;` `"hello, world"
-    mov [esp+10h+var_10], eax
-    call _printf
-    mov eax, 0
-    leave
-    retn
-main            endp
+main        proc near
+var_10      = dword ptr -10h
+            push    ebp
+            mov     ebp, esp
+            and     esp, 0FFFFFFF0h
+            sub     esp, 10h
+            mov     eax, offset aHelloWorld ;` `"hello, world"
+            mov     [esp+10h+var_10], eax
+            call    _printf
+            mov     eax, 0
+            leave
+            retn
+main        endp
 ```
 
 结果几乎是相同的，`"hello,world"`字符串地址（保存在data段的）一开始保存在EAX寄存器当中，然后保存到栈当中。
