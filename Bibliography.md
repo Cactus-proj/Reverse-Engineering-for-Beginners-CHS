@@ -56,8 +56,7 @@ Also available as http://go.yurichev.com/17269.
 
 [Dre07]  
 Ulrich Drepper. What Every Programmer Should Know About Memory.
-Also available as http://go.yurichev.
-com/17341. 2007.
+Also available as http://go.yurichev.com/17341. 2007.
 
 [Dre13]  
 Ulrich Drepper. “ELF Handling For Thread-Local Storage”. In: (2013).
