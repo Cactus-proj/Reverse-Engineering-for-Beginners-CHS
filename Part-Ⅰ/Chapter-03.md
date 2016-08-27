@@ -206,8 +206,7 @@ main:
 在Intel与AT&T语法当中一些主要的区别就是：
 
 - 操作数写在后面<br>
-  在Intel语法中：\<instruction> \<destination operand=""> \<source operand=""><br>  在AT&amp;T语法中：\<instruction> \<source operand=""> \<destination operand=""><br>  有一个简单的记住它们的方法: 当你面对intel语法的时候，你可以想象把等号(=)放到2个操作数中间，当面对AT&amp;T语法的时候，你可以放一个右箭头(→）到两个操作数之间。  </destination></instruction></destination></instruction>
-
+  在Intel语法中：\<instruction> \<destination operand> \<source operand><br>  在AT&amp;T语法中：\<instruction> \<source operand> \<destination operand><br>  有一个简单的记住它们的方法: 当你面对intel语法的时候，你可以想象把等号(=)放到2个操作数中间，当面对AT&amp;T语法的时候，你可以放一个右箭头(→）到两个操作数之间。
 - AT&T: 在寄存器名之前需要写一个百分号(%)并且在数字前面需要加上美元符($)。并用圆括号替代方括号。
 - AT&T: 以下是一些添加到操作符后，用来表示数据形式的后缀：<br>
   – q -- quad (64 bits)<br>
