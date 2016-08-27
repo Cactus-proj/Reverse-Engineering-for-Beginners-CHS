@@ -161,16 +161,16 @@ Listing 3.5: GCC 4.7.3
 main:
 .LFB0:
         .cfi_startproc
-        pushl     %ebp
+        pushl   %ebp
         .cfi_def_cfa_offset 8
         .cfi_offset 5, -8
-        movl     %esp, %ebp
+        movl    %esp, %ebp
         .cfi_def_cfa_register 5
-        andl     $-16, %esp
-        subl     $16, %esp
-        movl     $.LC0, (%esp)
-        call     printf
-        movl     $0, %eax
+        andl    $-16, %esp
+        subl    $16, %esp
+        movl    $.LC0, (%esp)
+        call    printf
+        movl    $0, %eax
         leave
         .cfi_restore 5
         .cfi_def_cfa 4, 4
@@ -193,12 +193,12 @@ Listing 3.6: GCC 4.7.3
     .string "hello, world"
 main:
     pushl   %ebp
-    movl %esp, %ebp
-    andl $-16, %esp
-    subl $16, %esp
-    movl $.LC0, (%esp)
-    call printf
-    movl $0, %eax
+    movl    %esp, %ebp
+    andl    $-16, %esp
+    subl    $16, %esp
+    movl    $.LC0, (%esp)
+    call    printf
+    movl    $0, %eax
     leave
     ret
 ```
@@ -227,14 +227,14 @@ main:
 
 Listing 3.7: MSVC 2012 x64
 ```
-$SG2989 DB      'hello, world', 00H
+$SG2989 DB     'hello, world', 00H
 main    PROC
-    sub    rsp, 40
-    lea    rcx, OFFSET FLAT:$SG2923
-    call   printf
-    xor    eax, eax
-    add    rsp, 40
-    ret    0
+        sub    rsp, 40
+        lea    rcx, OFFSET FLAT:$SG2923
+        call   printf
+        xor    eax, eax
+        add    rsp, 40
+        ret    0
 main ENDP
 ```
 
@@ -255,7 +255,7 @@ main()函数会返回一个int类型的值，在C/C++里为了兼容和移植性
 Listing 3.8: GCC 4.4.6 x64
 
 ```
-    .string "hello, world"
+.string "hello, world"
 main:
     sub    rsp, 8
     mov    edi, OFFSET FLAT:.LC0 ; "hello, world"
@@ -279,15 +279,15 @@ main:
 Listing 3.9: GCC 4.4.6 x64
 
 ```
-.text:00000000004004D0                         main proc near
+.text:00000000004004D0                      main proc near
 .text:00000000004004D0 48 83 EC 08          sub     rsp, 8
 .text:00000000004004D4 BF E8 05 40 00       mov     edi, offset format ;"hello, world"
 .text:00000000004004D9 31 C0                xor     eax, eax
-.text:00000000004004DB E8 D8 FE FF FF       call     _printf
+.text:00000000004004DB E8 D8 FE FF FF       call    _printf
 .text:00000000004004E0 31 C0                xor     eax, eax
 .text:00000000004004E2 48 83 C4 08          add     rsp, 8
 .text:00000000004004E6 C3                   retn
-.text:00000000004004E6                         main endp
+.text:00000000004004E6                      main endp
 ```
 
 就像看到的那样，在`0x4004D4`那行写入`EDI`花了5个字节。如果把这句换成给`EDI`写入64位的值，会花掉7个字节。显然，GCC在试图节省空间，除此之外，数据段(data segment)中包含的字串不会分配到高于4GiB的地址。
@@ -321,29 +321,29 @@ int main()
 一般的C/C++编译器(包括MSVC)会分别分配给地址两个字符串，但是让我们看看GCC干了什么： Listing 3.10: GCC 4.8.1 + IDA listing
 
 ```
-f1         proc near
+f1      proc near
 
-s         = dword ptr -1Ch
+s       = dword ptr -1Ch
         sub     esp, 1Ch
         mov     [esp+1Ch+s], offset s ; "world\n"
-        call     _puts
+        call    _puts
         add     esp, 1Ch
         retn
-f1         endp
+f1      endp
 
-f2         proc near
+f2      proc near
 
-s         = dword ptr -1Ch
+s       = dword ptr -1Ch
 
         sub     esp, 1Ch
         mov     [esp+1Ch+s], offset aHello ; "hello "
         call    _puts
         add     esp, 1Ch
         retn
-f2         endp
+f2      endp
 
-aHello     db 'hello '
-s         db 'world',0xa,0
+aHello  db 'hello '
+s       db 'world',0xa,0
 ```
 
 实际上，当我们打印"hello world"字符串时，这两个单词被放在内存里相邻的位置。函数f2()中调用的`puts()`并不知道字符串已经被分开了。事实上字符串并没有被真正分开，只是在代码里被假装分开了。
@@ -373,12 +373,12 @@ armcc编译器可以生成intel语法的汇编程序列表，但是里面有高�
 Listing 3.11: 无优化的 Keil 6/2013 (ARM 模式) IDA
 
 ```
-.text:00000000                  main
-.text:00000000 10 40 2D E9            STMFD     SP!, {R4,LR}
-.text:00000004 1E 0E 8F E2          ADR     R0, aHelloWorld ; "hello, world"
-.text:00000008 15 19 00 EB          BL         __2printf
-.text:0000000C 00 00 A0 E3          MOV     R0, #0
-.text:00000010 10 80 BD E8          LDMFD     SP!, {R4,PC}
+.text:00000000             main
+.text:00000000 10 40 2D E9    STMFD   SP!, {R4,LR}
+.text:00000004 1E 0E 8F E2    ADR     R0, aHelloWorld ; "hello, world"
+.text:00000008 15 19 00 EB    BL      __2printf
+.text:0000000C 00 00 A0 E3    MOV     R0, #0
+.text:00000010 10 80 BD E8    LDMFD   SP!, {R4,PC}
 
 .text:000001EC 68 65 6C 6C +aHelloWorld  DCB "hello, world",0 ; DATA XREF: main+4
 ```
@@ -427,12 +427,12 @@ Listing 3.11: 无优化的 Keil 6/2013 (ARM 模式) IDA
 我们可以在IDA里得到下面这样的代码： Listing 3.12: Non-optimizing Keil 6/2013 (Thumb mode) + IDA
 
 ```
-.text:00000000            main
-.text:00000000 10 B5          PUSH         {R4,LR}
+.text:00000000             main
+.text:00000000 10 B5          PUSH       {R4,LR}
 .text:00000002 C0 A0          ADR        R0, aHelloWorld ; "hello, world"
 .text:00000004 06 F0 2E F9    BL         __2printf
-.text:00000008 00 20          MOVS        R0, #0
-.text:0000000A 10 BD          POP         {R4,PC}
+.text:00000008 00 20          MOVS       R0, #0
+.text:0000000A 10 BD          POP        {R4,PC}
 .text:00000304 68 65 6C 6C +aHelloWorld  DCB "hello, world",0 ; DATA XREF: main+2
 ```
 
@@ -452,8 +452,8 @@ Listing 3.13: Optimizing Xcode 4.6.3 (LLVM) (ARM mode)
 
 ```
 __text:000028C4         _hello_world
-__text:000028C4 80 40 2D E9        STMFD   SP!, {R7,LR}
-__text:000028C8 86 06 01 E3        MOV     R0, #0x1686
+__text:000028C4 80 40 2D E9     STMFD   SP!, {R7,LR}
+__text:000028C8 86 06 01 E3     MOV     R0, #0x1686
 __text:000028CC 0D 70 A0 E1     MOV     R7, SP
 __text:000028D0 00 00 40 E3     MOVT    R0, #0
 __text:000028D4 00 00 8F E0     ADD     R0, PC, R0
@@ -521,7 +521,7 @@ __cstring:00003E70 48 65 6C 6C 6F 20 +aHelloWorld DCB "Hello world!",0xA,0
 还有些其他的差异，比如`BLX`指令替代了上面用到的`BL`指令。这样做的区别在于：这条指令除了将`RA`存入到寄存器`LR`里，还将控制全交给`puts()`函数，并且处理器也从Thumb/Thumb-2模式转换到了ARM模式（或者相反）。这条指令放在这里，是因为跳转到了像下面这样的位置（下面的代码以ARM模式编码）。
 
 ```
-__symbolstub1:00003FEC _puts              ; CODE XREF: _hello_world+E
+__symbolstub1:00003FEC _puts            ; CODE XREF: _hello_world+E
 __symbolstub1:00003FEC 44 F0 9F E5      LDR PC, =__imp__puts
 ```
 
@@ -630,67 +630,67 @@ Listing 3.17: 无优化的 GCC 4.8.1 + objdump
 Listing 3.18: 带优化的 GCC 4.4.5 (汇编输出)
 
 ```
-1     $LC0:
-2     ; \000 is zero byte in octal base:
-3             .ascii "Hello, world!\012\000"
-4     main:
-5     ; function prologue.
-6     ; set the GP:
-7             lui     $28,%hi(__gnu_local_gp)
-8             addiu     $sp,$sp,-32
-9             addiu     $28,$28,%lo(__gnu_local_gp)
+1      $LC0:
+2      ; \000 is zero byte in octal base:
+3              .ascii  "Hello, world!\012\000"
+4      main:
+5      ; function prologue.
+6      ; set the GP:
+7              lui     $28,%hi(__gnu_local_gp)
+8              addiu   $sp,$sp,-32
+9              addiu   $28,$28,%lo(__gnu_local_gp)
 10     ; save the RA to the local stack:
-11             sw         $31,28($sp)
+11             sw      $31,28($sp)
 12     ; load the address of the puts() function from the GP to $25:
-13             lw         $25,%call16(puts)($28)
+13             lw      $25,%call16(puts)($28)
 14     ; load the address of the text string to $4 ($a0):
 15             lui     $4,%hi($LC0)
 16     ; jump to puts(), saving the return address in the link register:
-17             jalr     $25
-18             addiu $4,$4,%lo($LC0)     ; branch delay slot
+17             jalr    $25
+18             addiu   $4,$4,%lo($LC0)    ; branch delay slot
 19     ; restore the RA:
-20             lw         $31,28($sp)
+20             lw      $31,28($sp)
 21     ; copy 0 from $zero to $v0:
-22             move     $2,$0
+22             move    $2,$0
 23     ; return by jumping to the RA:
-24             j         $31
+24             j       $31
 25     ; function epilogue:
-26             addiu     $sp,$sp,32         ; branch delay slot
+26             addiu   $sp,$sp,32         ; branch delay slot
 ```
 
 Listing 3.19: 带优化的 GCC 4.4.5 (IDA)
 
 ```
-1     .text:00000000     main:
-2     .text:00000000
-3     .text:00000000     var_10         = -0x10
-4     .text:00000000     var_4         = -4
-5     .text:00000000
-6     ; function prologue.
-7     ; set the GP:
-8     .text:00000000                 lui     $gp, (__gnu_local_gp >> 16)
-9     .text:00000004                 addiu     $sp, -0x20
-10     .text:00000008                 la         $gp, (__gnu_local_gp & 0xFFFF)
+1      .text:00000000 main:
+2      .text:00000000
+3      .text:00000000 var_10          = -0x10
+4      .text:00000000 var_4           = -4
+5      .text:00000000
+6      ; function prologue.
+7      ; set the GP:
+8      .text:00000000                 lui     $gp, (__gnu_local_gp >> 16)
+9      .text:00000004                 addiu   $sp, -0x20
+10     .text:00000008                 la      $gp, (__gnu_local_gp & 0xFFFF)
 11     ; save the RA to the local stack:
-12     .text:0000000C                 sw         $ra, 0x20+var_4($sp)
+12     .text:0000000C                 sw      $ra, 0x20+var_4($sp)
 13     ; save the GP to the local stack:
 14     ; for some reason, this instruction is missing in the GCC assembly output:
-15     .text:00000010                 sw         $gp, 0x20+var_10($sp)
+15     .text:00000010                 sw      $gp, 0x20+var_10($sp)
 16     ; load the address of the puts() function from the GP to $t9:
-17     .text:00000014                 lw         $t9, (puts & 0xFFFF)($gp)
+17     .text:00000014                 lw      $t9, (puts & 0xFFFF)($gp)
 18     ; form the address of the text string in $a0:
 19     .text:00000018                 lui     $a0, ($LC0 >> 16)         # "Hello, world!"
 20     ; jump to puts(), saving the return address in the link register:
-21     .text:0000001C                 jalr     $t9
-22     .text:00000020                 la         $a0, ($LC0 & 0xFFFF)     # "Hello, world!"
+21     .text:0000001C                 jalr    $t9
+22     .text:00000020                 la      $a0, ($LC0 & 0xFFFF)      # "Hello, world!"
 23     ; restore the RA:
-24     .text:00000024                 lw        $ra, 0x20+var_4($sp)
+24     .text:00000024                 lw      $ra, 0x20+var_4($sp)
 25     ; copy 0 from $zero to $v0:
-26     .text:00000028                 move     $v0, $zero
+26     .text:00000028                 move    $v0, $zero
 27     ; return by jumping to the RA:
-28     .text:0000002C                 jr         $ra
+28     .text:0000002C                 jr      $ra
 29     ; function epilogue:
-30     .text:00000030                 addiu     $sp, 0x20
+30     .text:00000030                 addiu   $sp, 0x20
 ```
 
 ### 3.5.3 无优化的 GCC
@@ -700,45 +700,45 @@ Listing 3.19: 带优化的 GCC 4.4.5 (IDA)
 Listing 3.20: 无优化的 GCC 4.4.5 (汇编输出)
 
 ```
-1     $LC0:
-2             .ascii "Hello, world!\012\000"
-3     main:
-4     ; function prologue.
-5     ; save the RA ($31) and FP in the stack:
-6             addiu     $sp,$sp,-32
-7             sw         $31,28($sp)
-8             sw         $fp,24($sp)
-9     ; set the FP (stack frame pointer):
-10             move     $fp,$sp
+1      $LC0:
+2              .ascii "Hello, world!\012\000"
+3      main:
+4      ; function prologue.
+5      ; save the RA ($31) and FP in the stack:
+6              addiu   $sp,$sp,-32
+7              sw      $31,28($sp)
+8              sw      $fp,24($sp)
+9      ; set the FP (stack frame pointer):
+10             move    $fp,$sp
 11     ; set the GP:
 12             lui     $28,%hi(__gnu_local_gp)
-13             addiu     $28,$28,%lo(__gnu_local_gp)
+13             addiu   $28,$28,%lo(__gnu_local_gp)
 14     ; load the address of the text string:
 15             lui     $2,%hi($LC0)
-16             addiu     $4,$2,%lo($LC0)
+16             addiu   $4,$2,%lo($LC0)
 17     ; load the address of puts() using the GP:
-18             lw         $2,%call16(puts)($28)
+18             lw      $2,%call16(puts)($28)
 19             nop
 20     ; call puts():
-21             move     $25,$2
-22             jalr     $25
-23             nop             ; branch delay slot
+21             move    $25,$2
+22             jalr    $25
+23             nop     ; branch delay slot
 24
 25     ; restore the GP from the local stack:
-26             lw         $28,16($fp)
+26             lw      $28,16($fp)
 27     ; set register $2 ($V0) to zero:
-28             move     $2,$0
+28             move    $2,$0
 29     ; function epilogue.
 30     ; restore the SP:
-31             move     $sp,$fp
+31             move    $sp,$fp
 32     ; restore the RA:
-33             lw         $31,28($sp)
+33             lw      $31,28($sp)
 34     ; restore the FP:
-35             lw         $fp,24($sp)
-36             addiu     $sp,$sp,32
+35             lw      $fp,24($sp)
+36             addiu   $sp,$sp,32
 37     ; jump to the RA:
-38             j         $31
-39             nop             ; branch delay slot
+38             j       $31
+39             nop     ; branch delay slot
 ```
 
 这里我们可以看出，`FP`寄存器被当作指向堆栈帧的指针。我们也可以看见3个`NOP`。第二个和第三个都跟在分支指令之后。
@@ -750,47 +750,47 @@ Listing 3.20: 无优化的 GCC 4.4.5 (汇编输出)
 Listing 3.21: 无优化的 GCC 4.4.5 (IDA)
 
 ```
-1     .text:00000000     main:
-2     .text:00000000
-3     .text:00000000     var_10             = -0x10
-4     .text:00000000     var_8             = -8
-5     .text:00000000     var_4             = -4
-6    .text:00000000
-7     ; function prologue.
-8     ; save the RA and FP in the stack:
-9     .text:00000000                     addiu     $sp, -0x20
-10     .text:00000004                     sw         $ra, 0x20+var_4($sp)
-11     .text:00000008                     sw         $fp, 0x20+var_8($sp)
+1      .text:00000000 main:
+2      .text:00000000
+3      .text:00000000 var_10          = -0x10
+4      .text:00000000 var_8           = -8
+5      .text:00000000 var_4           = -4
+6      .text:00000000
+7      ; function prologue.
+8      ; save the RA and FP in the stack:
+9      .text:00000000                 addiu   $sp, -0x20
+10     .text:00000004                 sw      $ra, 0x20+var_4($sp)
+11     .text:00000008                 sw      $fp, 0x20+var_8($sp)
 12     ; set the FP (stack frame pointer):
-13    .text:0000000C move $fp, $sp
+13     .text:0000000C move $fp, $sp
 14     ; set the GP:
-15     .text:00000010                     la         $gp, __gnu_local_gp
-16     .text:00000018                     sw         $gp, 0x20+var_10($sp)
+15     .text:00000010                 la      $gp, __gnu_local_gp
+16     .text:00000018                 sw      $gp, 0x20+var_10($sp)
 17     ; load the address of the text string:
-18     .text:0000001C                     lui     $v0, (aHelloWorld >> 16)             # "Hello, world!"
-19     .text:00000020                     addiu     $a0, $v0, (aHelloWorld & 0xFFFF)     # "Hello, world!"
+18     .text:0000001C                 lui     $v0, (aHelloWorld >> 16)             # "Hello, world!"
+19     .text:00000020                 addiu   $a0, $v0, (aHelloWorld & 0xFFFF)     # "Hello, world!"
 20     ; load the address of puts() using the GP:
-21     .text:00000024                     lw         $v0, (puts & 0xFFFF)($gp)
-22     .text:00000028                     or         $at, $zero     ; NOP
+21     .text:00000024                 lw      $v0, (puts & 0xFFFF)($gp)
+22     .text:00000028                 or      $at, $zero     ; NOP
 23     ; call puts():
-24     .text:0000002C                     move     $t9, $v0
-25     .text:00000030                     jalr     $t9
-26    .text:00000034                     or         $at, $zero ; NOP
+24     .text:0000002C                 move    $t9, $v0
+25     .text:00000030                 jalr    $t9
+26     .text:00000034                 or      $at, $zero ; NOP
 27     ; restore the GP from local stack:
-28     .text:00000038                     lw         $gp, 0x20+var_10($fp)
+28     .text:00000038                 lw      $gp, 0x20+var_10($fp)
 29     ; set register $2 ($V0) to zero:
-30     .text:0000003C                     move     $v0, $zero
+30     .text:0000003C                 move    $v0, $zero
 31     ; function epilogue.
 32     ; restore the SP:
-33     .text:00000040                     move     $sp, $fp
+33     .text:00000040                 move    $sp, $fp
 34     ; restore the RA:
-35     .text:00000044                     lw         $ra, 0x20+var_4($sp)
+35     .text:00000044                 lw      $ra, 0x20+var_4($sp)
 36     ; restore the FP:
-37     .text:00000048                     lw         $fp, 0x20+var_8($sp)
-38     .text:0000004C                     addiu     $sp, 0x20
+37     .text:00000048                 lw      $fp, 0x20+var_8($sp)
+38     .text:0000004C                 addiu   $sp, 0x20
 39     ; jump to the RA:
-40     .text:00000050                     jr         $ra
-41     .text:00000054                     or         $at, $zero ; NOP
+40     .text:00000050                 jr      $ra
+41     .text:00000054                 or      $at, $zero ; NOP
 ```
 
 有趣的是，IDA识别出了`LUI/ADDIU`这对指令，并把它们在第15行合并为`LA(Load Address)`伪指令。我我们也可以看到这个伪指令有8个字节长。这是一个伪指令(或宏)因为它不是真正的`MIPS`指令，只是一对指令的简称。
@@ -826,19 +826,19 @@ Breakpoint 1, 0x00400654 in main ()
 (gdb) set step-mode on
 (gdb) disas
 Dump of assembler code for function main:
-0x00400640 <main+0>:     lui     gp,0x42
-0x00400644 <main+4>:     addiu     sp,sp,-32
-0x00400648 <main+8>:     addiu     gp,gp,-30624
-0x0040064c <main+12>:     sw         ra,28(sp)
-0x00400650 <main+16>:     sw         gp,16(sp)
-0x00400654 <main+20>:     lw         t9,-32716(gp)
-0x00400658 <main+24>:     lui     a0,0x40
-0x0040065c <main+28>:     jalr     t9
-0x00400660 <main+32>:     addiu     a0,a0,2080
-0x00400664 <main+36>:     lw         ra,28(sp)
-0x00400668 <main+40>:     move     v0,zero
-0x0040066c <main+44>:     jr         ra
-0x00400670 <main+48>:     addiu     sp,sp,32
+0x00400640 <main+0>:    lui     gp,0x42
+0x00400644 <main+4>:    addiu   sp,sp,-32
+0x00400648 <main+8>:    addiu   gp,gp,-30624
+0x0040064c <main+12>:   sw      ra,28(sp)
+0x00400650 <main+16>:   sw      gp,16(sp)
+0x00400654 <main+20>:   lw      t9,-32716(gp)
+0x00400658 <main+24>:   lui     a0,0x40
+0x0040065c <main+28>:   jalr    t9
+0x00400660 <main+32>:   addiu   a0,a0,2080
+0x00400664 <main+36>:   lw      ra,28(sp)
+0x00400668 <main+40>:   move    v0,zero
+0x0040066c <main+44>:   jr      ra
+0x00400670 <main+48>:   addiu   sp,sp,32
 End of assembler dump.
 (gdb) s
 0x00400658 in main ()
