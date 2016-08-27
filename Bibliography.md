@@ -146,7 +146,8 @@ URL: http://go.yurichev.com/17318.
 #### [Pre+07]  
 William H. Press et al. Numerical Recipes. 2007.
 
-#### [RA09] Mark E. Russinovich and David A. Solomon with Alex Ionescu. Windows® Internals: Including Windows Server 2008 and Windows 2009.
+#### [RA09]     
+Mark E. Russinovich and David A. Solomon with Alex Ionescu. Windows® Internals: Including Windows Server 2008 and Windows 2009.
 
 #### [Ray03]  
 Eric S. Raymond. The Art of UNIX Programming.
