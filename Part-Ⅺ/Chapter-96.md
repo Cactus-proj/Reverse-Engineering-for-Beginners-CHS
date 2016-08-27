@@ -6,7 +6,7 @@
 # Books
 
 ## 96.1 Windows
-[RA09](Bibliography.md)
+[RA09](Bibliography.md#[RA09])
 
 ## 96.2 C/C++
 [ISO13](Bibliography.md)
