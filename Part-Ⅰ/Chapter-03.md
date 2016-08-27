@@ -1,5 +1,4 @@
 # 第三章
-
 # Hello,world!
 
 让我们用《C语言程序设计》中最著名的例子开始吧[[Ker88]](Bibliography.md)：
@@ -24,7 +23,7 @@ int main()
 
 （/Fa 选项表示让编译器生产汇编代码文件）
 
-代码清单 3.1: MSVC 2010
+Listing 3.1: MSVC 2010
 
 ```
 CONST   SEGMENT
@@ -81,7 +80,9 @@ int main()
 
 一些编辑器（如Intel C++编译器）在同样的情况下可能会用`POP ECX`代替`ADD`（这样的模式可以在Oracle RDBMS的代码中看到，因为它也是由Intel C++编译器编译的），这两条指令的效果基本相同，但是ECX的寄存器内容会被改写。Intel C++编译器可能用`POP ECX`，因为这条指令比`ADD ESP, X`更短，（`POP`----1字节对应`ADD`----3字节）。
 
-这里有一个在Oracle RDBMS中用`POP`而不用`ADD`的例子。 清单 3.2: Oracle RDBMS 10.2 Linux (app.o 文件)
+这里有一个在Oracle RDBMS中用`POP`而不用`ADD`的例子。
+
+Listing 3.2: Oracle RDBMS 10.2 Linux (app.o 文件)
 
 ```
 .text:0800029A         push     ebx
@@ -105,7 +106,7 @@ XOR事实上就是异或，但是编译器经常用它来代替`MOV EAX, 0`原�
 
 下一步，在IDA反汇编的帮助下，我们看看main()函数是如何被创建的。IDA与MSVC一样，也是使用Intel语法。
 
-代码清单 3.3:IDA里的代码
+Listing 3.3:IDA里的代码
 
 ```
 main        proc near
@@ -143,11 +144,11 @@ main        endp
 
 ### 3.1.3 GCC:AT&T 语法
 
-我们来看一看在AT&T当中的汇编语法，这个语法在UNIX类系统当中更普遍。 代码清单 3.4: 让我们用 GCC 4.7.3 编译 `gcc -S 1_1.c`
+我们来看一看在AT&T当中的汇编语法，这个语法在UNIX类系统当中更普遍。 Listing 3.4: 让我们用 GCC 4.7.3 编译 `gcc -S 1_1.c`
 
 我们将得到这个：
 
-代码清单 3.5: GCC 4.7.3
+Listing 3.5: GCC 4.7.3
 
 ```
         .file   "1_1.c"
@@ -185,7 +186,7 @@ main:
 
 现在为了简单起见，我们先不看这些。（除了 .string ，就像C-string一样，用于编码一个以null结尾的字符序列）。然后，我们将看到这个：
 
-代码清单 3.6: GCC 4.7.3
+Listing 3.6: GCC 4.7.3
 
 ```
 .LC0:
@@ -205,9 +206,7 @@ main:
 在Intel与AT&T语法当中一些主要的区别就是：
 
 - 操作数写在后面<br>
-  在Intel语法中：\
-
-  <instruction> \<destination operand=""> \<source operand=""><br>  在AT&amp;T语法中：\<instruction> \<source operand=""> \<destination operand=""><br>  有一个简单的记住它们的方法: 当你面对intel语法的时候，你可以想象把等号(=)放到2个操作数中间，当面对AT&amp;T语法的时候，你可以放一个右箭头(→）到两个操作数之间。  </destination></instruction></destination></instruction>
+  在Intel语法中：\<instruction> \<destination operand=""> \<source operand=""><br>  在AT&amp;T语法中：\<instruction> \<source operand=""> \<destination operand=""><br>  有一个简单的记住它们的方法: 当你面对intel语法的时候，你可以想象把等号(=)放到2个操作数中间，当面对AT&amp;T语法的时候，你可以放一个右箭头(→）到两个操作数之间。  </destination></instruction></destination></instruction>
 
 - AT&T: 在寄存器名之前需要写一个百分号(%)并且在数字前面需要加上美元符($)。并用圆括号替代方括号。
 - AT&T: 以下是一些添加到操作符后，用来表示数据形式的后缀：<br>
@@ -224,8 +223,9 @@ main:
 
 ### 3.2.1 MSVC-x86-64
 
-让我们来试试64-bit的MSVC： 代码清单 3.7: MSVC 2012 x64
+让我们来试试64-bit的MSVC：
 
+Listing 3.7: MSVC 2012 x64
 ```
 $SG2989 DB      'hello, world', 00H
 main    PROC
@@ -252,7 +252,7 @@ main()函数会返回一个int类型的值，在C/C++里为了兼容和移植性
 
 这次在64位的Linux里试试GCC：
 
-代码清单 3.8: GCC 4.4.6 x64
+Listing 3.8: GCC 4.4.6 x64
 
 ```
     .string "hello, world"
@@ -266,7 +266,7 @@ main:
     ret
 ```
 
-在Linux,*BSD和Mac OS X里也使用同一种方式来传递函数参数。
+在Linux,\*BSD和Mac OS X里也使用同一种方式来传递函数参数。
 
 前6个参数使用`RDI,RSI,RDX,RCX,R8,R9`来传递的，剩下的用栈。
 
@@ -276,7 +276,7 @@ main:
 
 如果我们打开编译好的对象文件(object file[.o]),我们会看到所有的指令的操作符：
 
-代码清单 3.9: GCC 4.4.6 x64
+Listing 3.9: GCC 4.4.6 x64
 
 ```
 .text:00000000004004D0                         main proc near
@@ -294,9 +294,9 @@ main:
 
 可以看到在调用printf()函数前，`EAX`被清空了，这是因为在x86-64的 `*NIX` 系统上， 使用过的向量寄存器的数量会被存入`EAX` [Mit13]。
 
-## 3.3 关于GCC 额外的一点
+## 3.3 关于GCC的补充
 
-(3.1.1)，并且匿名的C字符串带有常量的类型C字符串在常量段被分配的地址是一定不变的。基于这样的事实，就有一个有趣的结论：编译器可能只用了字符串的某一部分。
+一个匿名的C字符串有常量类型(3.1.1)，并且匿名的C字符串带有常量的类型C字符串在常量段被分配的地址是一定不变的。基于这样的事实，就有一个有趣的结论：编译器可能只用了字符串的某一部分。
 
 让我们看看这个例子：
 
@@ -318,7 +318,7 @@ int main()
 }
 ```
 
-一般的C/C++编译器(包括MSVC)会分别分配给地址两个字符串，但是让我们看看GCC干了什么： 代码清单 3.10: GCC 4.8.1 + IDA listing
+一般的C/C++编译器(包括MSVC)会分别分配给地址两个字符串，但是让我们看看GCC干了什么： Listing 3.10: GCC 4.8.1 + IDA listing
 
 ```
 f1         proc near
@@ -370,7 +370,7 @@ s         db 'world',0xa,0
 
 armcc编译器可以生成intel语法的汇编程序列表，但是里面有高级的ARM处理器相关的宏，对我们来讲更希望看到"指令原来的样子"，所以让我们看看IDA反汇编之后的结果。
 
-代码清单 3.11: 无优化的 Keil 6/2013 (ARM 模式) IDA
+Listing 3.11: 无优化的 Keil 6/2013 (ARM 模式) IDA
 
 ```
 .text:00000000                  main
@@ -424,7 +424,7 @@ armcc编译器可以生成intel语法的汇编程序列表，但是里面有高�
 
 `armcc.exe –thumb –c90 –O0 1.c`
 
-我们可以在IDA里得到下面这样的代码： 代码清单 3.12: Non-optimizing Keil 6/2013 (Thumb mode) + IDA
+我们可以在IDA里得到下面这样的代码： Listing 3.12: Non-optimizing Keil 6/2013 (Thumb mode) + IDA
 
 ```
 .text:00000000            main
@@ -486,7 +486,7 @@ GCC将第一个`printf()`函数替换成了`puts()`。因为`printf()`函数只�
 
 在默认情况下，Xcode4.6.3会生成如下的Thumb-2代码
 
-代码清单 3.14: 带优化的 Xcode 4.6.3 (LLVM) (Thumb-2 模式)
+Listing 3.14: 带优化的 Xcode 4.6.3 (LLVM) (Thumb-2 模式)
 
 ```
 __text:00002B6C                _hello_world
@@ -565,15 +565,15 @@ __symbolstub1:00003FEC 44 F0 9F E5      LDR PC, =__imp__puts
 
 让我们在ARM64 上用GCC 4.8.1编译一下这个程序。
 
-代码清单 3.15:无优化的 GCC 4.8.1 + objdump
+Listing 3.15:无优化的 GCC 4.8.1 + objdump
 
 ```
 1    0000000000400590 <main>:
 2     400590:     a9bf7bfd     stp     x29, x30, [sp,#-16]!
 3     400594:     910003fd     mov     x29, sp
-4     400598:     90000000     adrp     x0, 400000 <_init-0x3b8>
+4     400598:     90000000     adrp    x0, 400000 <_init-0x3b8>
 5     40059c:     91192000     add     x0, x0, #0x648
-6     4005a0:     97ffffa0     bl         400420 <puts@plt>
+6     4005a0:     97ffffa0     bl      400420 <puts@plt>
 7     4005a4:     52800000     mov     w0, #0x0                     // #0
 8     4005a8:     a8c17bfd     ldp     x29, x30, [sp],#16
 9     4005ac:     d65f03c0     ret
@@ -596,7 +596,7 @@ ARM64里面没有`Thumb和Thumb-2模式`，只有ARM，所以这里只有32位�
 
 ![](pic/C3-2.png)
 
-代码清单 3.16: main() 返回uint64_t类型的值
+Listing 3.16: main() 返回uint64_t类型的值
 
 ```
 #include <stdio.h>
@@ -611,7 +611,7 @@ uint64_t main()
 
 结果是相似的，下面是在那一行，`MOV`看起来是怎么样的：
 
-代码清单 3.17: 无优化的 GCC 4.8.1 + objdump
+Listing 3.17: 无优化的 GCC 4.8.1 + objdump
 
 ```
 4005a4:     d2800000     mov     x0, #0x0         // #0
@@ -627,7 +627,7 @@ uint64_t main()
 
 让我们看看下面这个例子，他说明了全局指针的概念：
 
-代码清单 3.18: 带优化的 GCC 4.4.5 (汇编输出)
+Listing 3.18: 带优化的 GCC 4.4.5 (汇编输出)
 
 ```
 1     $LC0:
@@ -658,7 +658,7 @@ uint64_t main()
 26             addiu     $sp,$sp,32         ; branch delay slot
 ```
 
-代码清单 3.19: 带优化的 GCC 4.4.5 (IDA)
+Listing 3.19: 带优化的 GCC 4.4.5 (IDA)
 
 ```
 1     .text:00000000     main:
@@ -697,7 +697,7 @@ uint64_t main()
 
 无优化的GCC会产生更冗长的代码：
 
-代码清单 3.20: 无优化的 GCC 4.4.5 (汇编输出)
+Listing 3.20: 无优化的 GCC 4.4.5 (汇编输出)
 
 ```
 1     $LC0:
@@ -747,7 +747,7 @@ uint64_t main()
 
 下面是IDA反汇编后的代码：
 
-代码清单 3.21: 无优化的 GCC 4.4.5 (IDA)
+Listing 3.21: 无优化的 GCC 4.4.5 (IDA)
 
 ```
 1     .text:00000000     main:
@@ -803,7 +803,7 @@ uint64_t main()
 
 ### 3.5.5 带优化的 GCC:把它加载到GDB
 
-代码清单 3.22: GDB session 的例子
+Listing 3.22: GDB session 的例子
 
 ```
 root@debian-mips:~# gcc hw.c -O3 -o hw
