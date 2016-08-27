@@ -1,4 +1,4 @@
-# Bibliography
+# 参考资料
 
 
 #### [al12]  
@@ -44,7 +44,8 @@ Also available as http://go.yurichev.com/
 Marshall Cline. C++ FAQ.
 Also available as http://go.yurichev.com/17291.
 
-#### [Cor+09] Thomas H. Cormen et al. Introduction to Algorithms, Third Edition. 3rd. The MIT Press, 2009. ISBN: 0262033844,9780262033848.
+#### [Cor+09]
+Thomas H. Cormen et al. Introduction to Algorithms, Third Edition. 3rd. The MIT Press, 2009. ISBN: 0262033844,9780262033848.
 
 #### [Dij68]  
 Edsger W. Dijkstra. “Letters to the editor: go to statement considered harmful”. In: Commun. ACM 11.3 (Mar. 1968),pp. 147–148. ISSN: 0001-0782. DOI: 10.1145/362929.362947.

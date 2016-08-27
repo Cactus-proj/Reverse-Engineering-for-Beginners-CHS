@@ -1,4 +1,4 @@
-# Glossary
+# 术语表
 
 **real number numbers** which may contain a dot. this is float and double in C/C++.
 

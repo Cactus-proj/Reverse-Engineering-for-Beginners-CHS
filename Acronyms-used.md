@@ -1,4 +1,4 @@
-Acronyms used
+缩略词
 -
 
 **OS** 		Operating System  
