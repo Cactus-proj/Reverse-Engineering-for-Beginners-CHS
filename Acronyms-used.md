@@ -19,7 +19,7 @@ Pseudorandom number generator
 
 ## ROM
 Read-only memory   
-只读内存
+只读存储器
 
 ## ALU
 Arithmetic logic unit   
