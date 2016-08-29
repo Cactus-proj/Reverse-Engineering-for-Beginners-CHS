@@ -288,24 +288,36 @@ Master Boot Record
 
 ## JPE
 Jump Parity Even (x86 instruction)  
+奇偶位为1则转跳
+
 ## CIDR
 Classless Inter-Domain Routing  
+无类别域间路由
+
 ## STMFD    
 Store Multiple Full Descending (ARM instruction)  
+
 ## LDMFD    
 Load Multiple Full Descending (ARM instruction)  
+
 ## STMED    
 Store Multiple Empty Descending (ARM instruction)  
+
 ## LDMED    
 Load Multiple Empty Descending (ARM instruction)
+
 ## STMFA    
 Store Multiple Full Ascending (ARM instruction)  
+
 ## LDMFA
 Load Multiple Full Ascending (ARM instruction)  
+
 ## STMEA
 Store Multiple Empty Ascending (ARM instruction)  
+
 ## LDMEA
 Load Multiple Empty Ascending (ARM instruction)  
+
 ## APSR
 (ARM) Application Program Status Register  
 应用程序状态寄存器
