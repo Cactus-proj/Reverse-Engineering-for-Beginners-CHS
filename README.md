@@ -7,6 +7,10 @@
 - 和人邮社沟通后，因翻译版权问题，本分支只会对已翻译的内容进行错误修复。不会再对作者的主干分支进行同步更新。
 - 有兴趣的可以加QQ群一起交流逆向工程： [![RE4B](http://pub.idqqimg.com/wpa/images/group.png)](http://shang.qq.com/wpa/qunwpa?idkey=b1518dd16038d83086bcbe7847125e465447c3f7d990868f85a6d8df66c8c8e9)
 - 请勿再fork本分支进行传播
+- 安天Archer翻译，人邮社出版的RE4B中文版已经发售 购买链接-> [【逆向工程权威指南】](http://www.epubit.com.cn/book/details/4174)      
+  共两本上下册，定价为一套的价格
+  (**到淘宝、京东等平台购买时务必看清楚是几本的价格**)    
+  [![](http://file.epubit.com.cn/ScreenShow/17039bfad1b57bf84b56)](http://www.epubit.com.cn/book/onlinechapter/51413)
 
 # 参与过的翻译人员（如有遗漏烦请提醒一声）
 
